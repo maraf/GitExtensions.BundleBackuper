@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <Authors>Maraf</Authors>
+    <Company>Neptuo</Company>
+    <Description>Branch backuping extension for GitExtensions</Description>
+    <RepositoryUrl>https://github.com/maraf/GitExtensions.BundleBackuper</RepositoryUrl>
+    <PackageTags>Neptuo GitExtensions</PackageTags>
+    <PackageProjectUrl>http://www.neptuo.com/project/dev/gitextensions.bundlebackuper</PackageProjectUrl>
+  </PropertyGroup>
+
+</Project>
