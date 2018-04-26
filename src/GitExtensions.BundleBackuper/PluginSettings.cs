@@ -15,6 +15,11 @@ namespace GitExtensions.BundleBackuper
 
         private readonly ISettingsSource source;
 
+        public string BackupPath
+        {
+            get { return source.GetValue(BackupPathProperty.Name, BackupPathProperty.DefaultValue, t => t); }
+        }
+
         public PluginSettings(ISettingsSource source)
         {
             Ensure.NotNull(source, "source");
