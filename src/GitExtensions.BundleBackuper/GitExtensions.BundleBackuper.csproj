@@ -19,4 +19,8 @@
     </Reference>
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;C:\Program Files (x86)\GitExtensions\Plugins\$(TargetFileName)&quot;" />
+  </Target>
+
 </Project>
