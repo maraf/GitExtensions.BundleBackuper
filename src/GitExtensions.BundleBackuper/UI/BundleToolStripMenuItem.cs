@@ -68,7 +68,7 @@ namespace GitExtensions.BundleBackuper.UI
 
         private void OnDropDownOpened(object sender, EventArgs e)
         {
-            searchBox.Text = string.Empty;
+            searchBox.Text = String.Empty;
             searchBox.Focus();
         }
 
