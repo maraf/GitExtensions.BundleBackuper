@@ -1,4 +1,5 @@
-﻿using GitUIPluginInterfaces;
+﻿using GitExtensions.BundleBackuper.Services;
+using GitUIPluginInterfaces;
 using Neptuo;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ namespace GitExtensions.BundleBackuper.UI
         private readonly IBundleProvider provider;
         private readonly IGitUICommands commands;
 
+        private readonly ToolStripTextBox searchBox;
+        private IEnumerable<Bundle> currentBundles;
+
         internal BundleToolStripMenuItem(IBundleProvider provider, IGitUICommands commands)
         {
             Ensure.NotNull(provider, "provider");
@@ -23,14 +27,32 @@ namespace GitExtensions.BundleBackuper.UI
             this.commands = commands;
             Text = "Bundles";
             DropDownOpening += OnDropDownOpening;
+            DropDownOpened += OnDropDownOpened;
             DropDownItemClicked += OnDropDownItemClicked;
+
+            searchBox = new ToolStripTextBox()
+            {
+                AutoSize = false,
+                Width = 200,
+                ToolTipText = "Search bundles...",
+            };
+            searchBox.TextChanged += OnSearchBoxTextChanged;
+            DropDown.Items.Add(searchBox);
         }
 
-        private void OnDropDownOpening(object sender, EventArgs e)
+        private void OnSearchBoxTextChanged(object sender, EventArgs e)
         {
-            DropDown.Items.Clear();
-
+            for (int i = 1; i < DropDown.Items.Count; i++)
             {
+                if (DropDown.Items[i] is ToolStripMenuItem item && item.Tag is Bundle bundle)
+                    item.Visible = bundle.Name.Contains(searchBox.Text);
+            }
+        }
+
+        private async void OnDropDownOpening(object sender, EventArgs e)
+        {
+            while (DropDown.Items.Count > 1)
+                DropDown.Items.RemoveAt(1);
 
             currentBundles = await provider.EnumerateAsync();
             foreach (Bundle bundle in currentBundles)
@@ -41,6 +63,12 @@ namespace GitExtensions.BundleBackuper.UI
                     Checked = commands.GitModule.GetRemotes().Contains(bundle.Name)
                 });
             }
+        }
+
+        private void OnDropDownOpened(object sender, EventArgs e)
+        {
+            searchBox.Text = string.Empty;
+            searchBox.Focus();
         }
 
         private void OnDropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
