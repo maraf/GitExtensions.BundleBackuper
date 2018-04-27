@@ -38,6 +38,8 @@ namespace GitExtensions.BundleBackuper.UI
             };
             searchBox.TextChanged += OnSearchBoxTextChanged;
             DropDown.Items.Add(searchBox);
+            DropDown.Items.Add(new ToolStripSeparator());
+            DropDown.Items.Add(new AddButton(mapper));
         }
 
         private void OnSearchBoxTextChanged(object sender, EventArgs e)
@@ -52,13 +54,13 @@ namespace GitExtensions.BundleBackuper.UI
 
         private async void OnDropDownOpening(object sender, EventArgs e)
         {
-            while (DropDown.Items.Count > 1)
-                DropDown.Items.RemoveAt(1);
+            foreach (var item in DropDown.Items.OfType<ToolStripItem>().Where(i => i.Tag is Bundle).ToList())
+                DropDown.Items.Remove(item);
 
             currentBundles = await provider.EnumerateAsync();
             foreach (Bundle bundle in currentBundles)
             {
-                DropDown.Items.Add(new ToolStripMenuItem(bundle.Name)
+                DropDown.Items.Insert(1, new ToolStripMenuItem(bundle.Name)
                 {
                     Tag = bundle,
                     Checked = mapper.Has(bundle)
