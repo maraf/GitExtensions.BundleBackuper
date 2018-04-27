@@ -1,4 +1,5 @@
-﻿using GitExtensions.BundleBackuper.UI;
+﻿using GitExtensions.BundleBackuper.Services;
+using GitExtensions.BundleBackuper.UI;
 using GitUI;
 using GitUI.CommandsDialogs;
 using GitUIPluginInterfaces;
@@ -38,7 +39,7 @@ namespace GitExtensions.BundleBackuper
             if (mainMenu != null)
             {
                 if (!mainMenu.Items.OfType<BundleToolStripMenuItem>().Any())
-                    mainMenu.Items.Add(new BundleToolStripMenuItem(Configuration, commands));
+                    mainMenu.Items.Add(new BundleToolStripMenuItem(new FileSystemBundleProvider(Configuration), commands));
             }
         }
 

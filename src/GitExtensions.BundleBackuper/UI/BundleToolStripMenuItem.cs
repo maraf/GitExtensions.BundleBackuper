@@ -12,14 +12,14 @@ namespace GitExtensions.BundleBackuper.UI
 {
     public class BundleToolStripMenuItem : ToolStripMenuItem
     {
-        private readonly PluginSettings settings;
+        private readonly IBundleProvider provider;
         private readonly IGitUICommands commands;
 
-        internal BundleToolStripMenuItem(PluginSettings settings, IGitUICommands commands)
+        internal BundleToolStripMenuItem(IBundleProvider provider, IGitUICommands commands)
         {
-            Ensure.NotNull(settings, "settings");
+            Ensure.NotNull(provider, "provider");
             Ensure.NotNull(commands, "commands");
-            this.settings = settings;
+            this.provider = provider;
             this.commands = commands;
             Text = "Bundles";
             DropDownOpening += OnDropDownOpening;
@@ -30,28 +30,26 @@ namespace GitExtensions.BundleBackuper.UI
         {
             DropDown.Items.Clear();
 
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(settings.BackupPath, "*.bundle", SearchOption.AllDirectories);
-            foreach (string filePath in filePaths)
             {
-                string fileName = Path.GetFileNameWithoutExtension(filePath);
 
-                DropDown.Items.Add(new ToolStripMenuItem(fileName)
+            currentBundles = await provider.EnumerateAsync();
+            foreach (Bundle bundle in currentBundles)
+            {
+                DropDown.Items.Add(new ToolStripMenuItem(bundle.Name)
                 {
-                    Tag = filePath,
-                    Checked = commands.GitModule.GetRemotes().Contains(fileName)
+                    Tag = bundle,
+                    Checked = commands.GitModule.GetRemotes().Contains(bundle.Name)
                 });
             }
         }
 
         private void OnDropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if (e.ClickedItem is ToolStripMenuItem target)
+            if (e.ClickedItem is ToolStripMenuItem target && target.Tag is Bundle bundle)
             {
-                string filePath = (string)e.ClickedItem.Tag;
-                string fileName = target.Text;
                 if (target.Checked)
                 {
-                    commands.GitModule.RemoveRemote(fileName);
+                    commands.GitModule.RemoveRemote(bundle.Name);
                     //commands.GitCommand("fetch --all");
                     //commands.StartPullDialog();
                     commands.StartGitCommandProcessDialog("fetch --all");
@@ -59,9 +57,9 @@ namespace GitExtensions.BundleBackuper.UI
                 }
                 else
                 {
-                    if (!String.IsNullOrEmpty(filePath) && File.Exists(filePath))
+                    if (!String.IsNullOrEmpty(bundle.FilePath) && File.Exists(bundle.FilePath))
                     {
-                        commands.GitModule.AddRemote(fileName, filePath);
+                        commands.GitModule.AddRemote(bundle.Name, bundle.FilePath);
                         //commands.GitCommand("fetch --all");
                         //commands.StartPullDialog();
                         commands.StartGitCommandProcessDialog("fetch --all");
@@ -69,7 +67,7 @@ namespace GitExtensions.BundleBackuper.UI
                     }
                     else
                     {
-                        MessageBox.Show($"File '{filePath}' doesn't exist or is not accessible.");
+                        MessageBox.Show($"File '{bundle.FilePath}' doesn't exist or is not accessible.");
                     }
                 }
             }
