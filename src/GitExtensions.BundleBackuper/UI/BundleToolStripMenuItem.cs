@@ -42,10 +42,11 @@ namespace GitExtensions.BundleBackuper.UI
 
         private void OnSearchBoxTextChanged(object sender, EventArgs e)
         {
+            string searchText = searchBox.Text.ToLowerInvariant();
             for (int i = 1; i < DropDown.Items.Count; i++)
             {
                 if (DropDown.Items[i] is ToolStripMenuItem item && item.Tag is Bundle bundle)
-                    item.Visible = bundle.Name.Contains(searchBox.Text);
+                    item.Visible = bundle.Name.ToLowerInvariant().Contains(searchText);
             }
         }
 
