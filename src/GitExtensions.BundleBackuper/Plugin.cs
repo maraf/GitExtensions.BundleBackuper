@@ -39,7 +39,7 @@ namespace GitExtensions.BundleBackuper
             if (mainMenu != null)
             {
                 if (!mainMenu.Items.OfType<BundleToolStripMenuItem>().Any())
-                    mainMenu.Items.Add(new BundleToolStripMenuItem(new FileSystemBundleProvider(Configuration), commands));
+                    mainMenu.Items.Add(new BundleToolStripMenuItem(new FileSystemBundleProvider(Configuration), new GitUiCommandsBundleMapper(commands)));
             }
         }
 

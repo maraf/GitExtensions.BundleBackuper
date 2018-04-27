@@ -14,17 +14,18 @@ namespace GitExtensions.BundleBackuper.UI
     public class BundleToolStripMenuItem : ToolStripMenuItem
     {
         private readonly IBundleProvider provider;
-        private readonly IGitUICommands commands;
+        private readonly IGitBundleMapper mapper;
 
         private readonly ToolStripTextBox searchBox;
         private IEnumerable<Bundle> currentBundles;
 
-        internal BundleToolStripMenuItem(IBundleProvider provider, IGitUICommands commands)
+        internal BundleToolStripMenuItem(IBundleProvider provider, IGitBundleMapper mapper)
         {
             Ensure.NotNull(provider, "provider");
-            Ensure.NotNull(commands, "commands");
+            Ensure.NotNull(mapper, "mapper");
             this.provider = provider;
-            this.commands = commands;
+            this.mapper = mapper;
+
             Text = "Bundles";
             DropDownOpening += OnDropDownOpening;
             DropDownOpened += OnDropDownOpened;
@@ -60,7 +61,7 @@ namespace GitExtensions.BundleBackuper.UI
                 DropDown.Items.Add(new ToolStripMenuItem(bundle.Name)
                 {
                     Tag = bundle,
-                    Checked = commands.GitModule.GetRemotes().Contains(bundle.Name)
+                    Checked = mapper.Has(bundle)
                 });
             }
         }
@@ -77,26 +78,14 @@ namespace GitExtensions.BundleBackuper.UI
             {
                 if (target.Checked)
                 {
-                    commands.GitModule.RemoveRemote(bundle.Name);
-                    //commands.GitCommand("fetch --all");
-                    //commands.StartPullDialog();
-                    commands.StartGitCommandProcessDialog("fetch --all");
-                    commands.RepoChangedNotifier.Notify();
+                    mapper.Remove(bundle);
                 }
                 else
                 {
                     if (!String.IsNullOrEmpty(bundle.FilePath) && File.Exists(bundle.FilePath))
-                    {
-                        commands.GitModule.AddRemote(bundle.Name, bundle.FilePath);
-                        //commands.GitCommand("fetch --all");
-                        //commands.StartPullDialog();
-                        commands.StartGitCommandProcessDialog("fetch --all");
-                        commands.RepoChangedNotifier.Notify();
-                    }
+                        mapper.Add(bundle);
                     else
-                    {
                         MessageBox.Show($"File '{bundle.FilePath}' doesn't exist or is not accessible.");
-                    }
                 }
             }
         }
