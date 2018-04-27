@@ -20,7 +20,7 @@ namespace GitExtensions.BundleBackuper
         public Plugin()
         {
             Name = "Bundle Backuper";
-            Description = "Branch backuping extension for GitExtensions";
+            Description = "Branch Bundle Backuping";
         }
 
         public override bool Execute(GitUIBaseEventArgs gitUiCommands)
