@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 
 namespace GitExtensions.BundleBackuper.Services
 {
-    public class GitUiCommandsBundleMapper : IGitBundleMapper
+    public class GitUiCommandsBundleMapper : IGitBundleMapper, IGitBundleMapperNotification
     {
         private readonly IGitUICommands commands;
+
+        public event Action<Bundle> Added;
+        public event Action<Bundle> Removed;
 
         public GitUiCommandsBundleMapper(IGitUICommands commands)
         {
@@ -23,9 +26,11 @@ namespace GitExtensions.BundleBackuper.Services
 
         public void Add(Bundle bundle)
         {
-            commands.GitModule.AddRemote(bundle.Name, bundle.FilePath);
-            commands.StartGitCommandProcessDialog("fetch --all");
-            commands.RepoChangedNotifier.Notify();
+            if (!Has(bundle))
+            {
+                commands.GitModule.AddRemote(bundle.Name, bundle.FilePath);
+                Added?.Invoke(bundle);
+            }
         }
 
         public void Remove(Bundle bundle)
@@ -33,8 +38,7 @@ namespace GitExtensions.BundleBackuper.Services
             if (Has(bundle))
             {
                 commands.GitModule.RemoveRemote(bundle.Name);
-                commands.StartGitCommandProcessDialog("fetch --all");
-                commands.RepoChangedNotifier.Notify();
+                Removed?.Invoke(bundle);
             }
         }
     }

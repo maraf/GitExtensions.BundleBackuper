@@ -11,14 +11,15 @@ namespace GitExtensions.BundleBackuper
 {
     internal class PluginSettings : IEnumerable<ISetting>
     {
-        public static StringSetting BackupPathProperty { get; } = new StringSetting("Backup Path", "A path where to store and load from bundle backups.", null);
+        public static StringSetting BackupPathProperty { get; } = new StringSetting("Backup Path", "Bundle Backup Path", null);
+        public static StringSetting AfterAddRemoteProperty { get; } = new StringSetting("After Add Remote", "Command to run after remote is added ({0} = remote name)", " fetch --progress \"{0}\"");
+        public static StringSetting AfterRemoveRemoteProperty { get; } = new StringSetting("After Add Remote", "Command to run after remote is removed ({0} = remote name)", "fetch --all");
 
         private readonly ISettingsSource source;
 
-        public string BackupPath
-        {
-            get { return source.GetValue(BackupPathProperty.Name, BackupPathProperty.DefaultValue, t => t); }
-        }
+        public string BackupPath => source.GetValue(BackupPathProperty.Name, BackupPathProperty.DefaultValue, t => t);
+        public string AfterAddRemote => source.GetValue(AfterAddRemoteProperty.Name, AfterAddRemoteProperty.DefaultValue, t => t);
+        public string AfterRemoveRemote => source.GetValue(AfterRemoveRemoteProperty.Name, AfterRemoveRemoteProperty.DefaultValue, t => t);
 
         public PluginSettings(ISettingsSource source)
         {
@@ -34,7 +35,9 @@ namespace GitExtensions.BundleBackuper
         {
             properties = new List<ISetting>(1)
             {
-                BackupPathProperty
+                BackupPathProperty,
+                AfterAddRemoteProperty,
+                AfterRemoveRemoteProperty
             };
         }
 

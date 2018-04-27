@@ -15,6 +15,8 @@ namespace GitExtensions.BundleBackuper
 {
     public class Plugin : GitPluginBase, IGitPluginForRepository
     {
+        private readonly List<IDisposable> disposables = new List<IDisposable>();
+
         internal PluginSettings Configuration { get; private set; }
 
         public Plugin()
@@ -39,13 +41,25 @@ namespace GitExtensions.BundleBackuper
             if (mainMenu != null)
             {
                 if (!mainMenu.Items.OfType<BundleToolStripMenuItem>().Any())
-                    mainMenu.Items.Add(new BundleToolStripMenuItem(new FileSystemBundleProvider(Configuration), new GitUiCommandsBundleMapper(commands)));
+                {
+                    var provider = new FileSystemBundleProvider(Configuration);
+                    var mapper = new GitUiCommandsBundleMapper(commands);
+                    var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, commands, mapper);
+                    disposables.Add(preferedExecutor);
+
+                    mainMenu.Items.Add(new BundleToolStripMenuItem(provider, mapper));
+                }
             }
         }
 
         public override void Unregister(IGitUICommands gitUiCommands)
         {
             base.Unregister(gitUiCommands);
+
+            foreach (IDisposable disposable in disposables)
+                disposable.Dispose();
+
+            disposables.Clear();
         }
     }
 }
