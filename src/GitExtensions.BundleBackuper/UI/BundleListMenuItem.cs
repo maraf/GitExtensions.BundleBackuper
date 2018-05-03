@@ -1,7 +1,5 @@
 ﻿using GitExtensions.BundleBackuper.Services;
-using GitUIPluginInterfaces;
 using Neptuo;
-using Neptuo.Activators;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,12 +10,12 @@ using System.Windows.Forms;
 
 namespace GitExtensions.BundleBackuper.UI
 {
-    public class BundleToolStripMenuItem : ToolStripMenuItem
+    public class BundleListMenuItem : ToolStripMenuItem
     {
         private readonly IBundleProvider provider;
         private readonly IGitBundleMapper mapper;
 
-        internal BundleToolStripMenuItem(IBundleProvider provider, IGitBundleMapper mapper, IGitBundleFactory bundleFactory)
+        internal BundleListMenuItem(IBundleProvider provider, IGitBundleMapper mapper, IGitBundleFactory bundleFactory)
         {
             Ensure.NotNull(provider, "provider");
             Ensure.NotNull(mapper, "mapper");

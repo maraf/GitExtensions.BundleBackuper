@@ -50,7 +50,7 @@ namespace GitExtensions.BundleBackuper
             return null;
         }
 
-        private BundleToolStripMenuItem FindMainMenuItem(IGitUICommands commands, MenuStripEx mainMenu = null)
+        private BundleListMenuItem FindMainMenuItem(IGitUICommands commands, MenuStripEx mainMenu = null)
         {
             if (mainMenu == null)
                 mainMenu = FindMainMenu(commands);
@@ -58,7 +58,7 @@ namespace GitExtensions.BundleBackuper
             if (mainMenu == null)
                 return null;
 
-            return mainMenu.Items.OfType<BundleToolStripMenuItem>().FirstOrDefault();
+            return mainMenu.Items.OfType<BundleListMenuItem>().FirstOrDefault();
         }
 
         public override void Register(IGitUICommands commands)
@@ -78,7 +78,7 @@ namespace GitExtensions.BundleBackuper
                     var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, this, service);
                     disposables.Add(preferedExecutor);
 
-                    mainMenu.Items.Add(new BundleToolStripMenuItem(provider, service, service));
+                    mainMenu.Items.Add(new BundleListMenuItem(provider, service, service));
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace GitExtensions.BundleBackuper
             MenuStripEx mainMenu = FindMainMenu(commands);
             if (mainMenu != null)
             {
-                BundleToolStripMenuItem mainMenuItem = FindMainMenuItem(commands, mainMenu);
+                BundleListMenuItem mainMenuItem = FindMainMenuItem(commands, mainMenu);
                 if (mainMenuItem != null)
                 {
                     mainMenu.Items.Remove(mainMenuItem);
