@@ -37,17 +37,20 @@ namespace GitExtensions.BundleBackuper
             Configuration = new PluginSettings(Settings);
 
             FormBrowse form = (FormBrowse)commands.BrowseRepo;
-            MenuStripEx mainMenu = form.Controls.OfType<MenuStripEx>().FirstOrDefault();
-            if (mainMenu != null)
+            if (form != null)
             {
-                if (!mainMenu.Items.OfType<BundleToolStripMenuItem>().Any())
+                MenuStripEx mainMenu = form.Controls.OfType<MenuStripEx>().FirstOrDefault();
+                if (mainMenu != null)
                 {
-                    var provider = new FileSystemBundleProvider(Configuration);
-                    var mapper = new GitUiCommandsBundleMapper(commands);
-                    var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, commands, mapper);
-                    disposables.Add(preferedExecutor);
+                    if (!mainMenu.Items.OfType<BundleToolStripMenuItem>().Any())
+                    {
+                        var provider = new FileSystemBundleProvider(Configuration);
+                        var mapper = new GitUiCommandsBundleMapper(commands);
+                        var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, commands, mapper);
+                        disposables.Add(preferedExecutor);
 
-                    mainMenu.Items.Add(new BundleToolStripMenuItem(provider, mapper));
+                        mainMenu.Items.Add(new BundleToolStripMenuItem(provider, mapper, commands, new DefaultBundleNameProvider(Configuration, commands)));
+                    }
                 }
             }
         }
