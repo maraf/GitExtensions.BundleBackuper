@@ -53,11 +53,11 @@ namespace GitExtensions.BundleBackuper
                     if (!mainMenu.Items.OfType<BundleToolStripMenuItem>().Any())
                     {
                         var provider = new FileSystemBundleProvider(Configuration);
-                        var mapper = new GitUiCommandsBundleMapper(this);
-                        var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, this, mapper);
+                        var service = new GitUiCommandsBundleService(this, new DefaultBundleNameProvider(Configuration, this));
+                        var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, this, service);
                         disposables.Add(preferedExecutor);
 
-                        mainMenu.Items.Add(new BundleToolStripMenuItem(provider, mapper, this, new DefaultBundleNameProvider(Configuration, this)));
+                        mainMenu.Items.Add(new BundleToolStripMenuItem(provider, service, service));
                     }
                 }
             }
