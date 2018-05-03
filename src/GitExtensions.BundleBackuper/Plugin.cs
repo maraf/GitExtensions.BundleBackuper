@@ -8,6 +8,7 @@ using Neptuo.Activators;
 using ResourceManager;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,6 +38,29 @@ namespace GitExtensions.BundleBackuper
         public override IEnumerable<ISetting> GetSettings()
             => Configuration;
 
+        private MenuStripEx FindMainMenu(IGitUICommands commands)
+        {
+            FormBrowse form = (FormBrowse)commands.BrowseRepo;
+            if (form != null)
+            {
+                MenuStripEx mainMenu = form.Controls.OfType<MenuStripEx>().FirstOrDefault();
+                return mainMenu;
+            }
+
+            return null;
+        }
+
+        private BundleToolStripMenuItem FindMainMenuItem(IGitUICommands commands, MenuStripEx mainMenu = null)
+        {
+            if (mainMenu == null)
+                mainMenu = FindMainMenu(commands);
+
+            if (mainMenu == null)
+                return null;
+
+            return mainMenu.Items.OfType<BundleToolStripMenuItem>().FirstOrDefault();
+        }
+
         public override void Register(IGitUICommands commands)
         {
             base.Register(commands);
@@ -44,28 +68,35 @@ namespace GitExtensions.BundleBackuper
             this.commands = commands;
             Configuration = new PluginSettings(Settings);
 
-            FormBrowse form = (FormBrowse)commands.BrowseRepo;
-            if (form != null)
+            if (commands.GitModule.IsValidGitWorkingDir())
             {
-                MenuStripEx mainMenu = form.Controls.OfType<MenuStripEx>().FirstOrDefault();
-                if (mainMenu != null)
+                MenuStripEx mainMenu = FindMainMenu(commands);
+                if (mainMenu != null && FindMainMenuItem(commands, mainMenu) == null)
                 {
-                    if (!mainMenu.Items.OfType<BundleToolStripMenuItem>().Any())
-                    {
-                        var provider = new FileSystemBundleProvider(Configuration);
-                        var service = new GitUiCommandsBundleService(this, new DefaultBundleNameProvider(Configuration, this));
-                        var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, this, service);
-                        disposables.Add(preferedExecutor);
+                    var provider = new FileSystemBundleProvider(Configuration);
+                    var service = new GitUiCommandsBundleService(this, new DefaultBundleNameProvider(Configuration, this));
+                    var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, this, service);
+                    disposables.Add(preferedExecutor);
 
-                        mainMenu.Items.Add(new BundleToolStripMenuItem(provider, service, service));
-                    }
+                    mainMenu.Items.Add(new BundleToolStripMenuItem(provider, service, service));
                 }
             }
         }
 
-        public override void Unregister(IGitUICommands gitUiCommands)
+        public override void Unregister(IGitUICommands commands)
         {
-            base.Unregister(gitUiCommands);
+            base.Unregister(commands);
+
+            MenuStripEx mainMenu = FindMainMenu(commands);
+            if (mainMenu != null)
+            {
+                BundleToolStripMenuItem mainMenuItem = FindMainMenuItem(commands, mainMenu);
+                if (mainMenuItem != null)
+                {
+                    mainMenu.Items.Remove(mainMenuItem);
+                    mainMenuItem.Dispose();
+                }
+            }
 
             foreach (IDisposable disposable in disposables)
                 disposable.Dispose();
