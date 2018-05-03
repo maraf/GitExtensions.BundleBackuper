@@ -3,6 +3,8 @@ using GitExtensions.BundleBackuper.UI;
 using GitUI;
 using GitUI.CommandsDialogs;
 using GitUIPluginInterfaces;
+using Neptuo;
+using Neptuo.Activators;
 using ResourceManager;
 using System;
 using System.Collections.Generic;
@@ -13,9 +15,10 @@ using System.Windows.Forms;
 
 namespace GitExtensions.BundleBackuper
 {
-    public class Plugin : GitPluginBase, IGitPluginForRepository
+    public class Plugin : GitPluginBase, IGitPluginForRepository, IFactory<IGitUICommands>
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();
+        private IGitUICommands commands;
 
         internal PluginSettings Configuration { get; private set; }
 
@@ -24,6 +27,9 @@ namespace GitExtensions.BundleBackuper
             Name = "Bundle Backuper";
             Description = "Branch Bundle Backuping";
         }
+
+        IGitUICommands IFactory<IGitUICommands>.Create()
+            => commands ?? throw Ensure.Exception.NotSupported("Plugin is not yet registered.");
 
         public override bool Execute(GitUIBaseEventArgs gitUiCommands)
             => true;
@@ -34,6 +40,8 @@ namespace GitExtensions.BundleBackuper
         public override void Register(IGitUICommands commands)
         {
             base.Register(commands);
+
+            this.commands = commands;
             Configuration = new PluginSettings(Settings);
 
             FormBrowse form = (FormBrowse)commands.BrowseRepo;
@@ -45,11 +53,11 @@ namespace GitExtensions.BundleBackuper
                     if (!mainMenu.Items.OfType<BundleToolStripMenuItem>().Any())
                     {
                         var provider = new FileSystemBundleProvider(Configuration);
-                        var mapper = new GitUiCommandsBundleMapper(commands);
-                        var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, commands, mapper);
+                        var mapper = new GitUiCommandsBundleMapper(this);
+                        var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, this, mapper);
                         disposables.Add(preferedExecutor);
 
-                        mainMenu.Items.Add(new BundleToolStripMenuItem(provider, mapper, commands, new DefaultBundleNameProvider(Configuration, commands)));
+                        mainMenu.Items.Add(new BundleToolStripMenuItem(provider, mapper, this, new DefaultBundleNameProvider(Configuration, this)));
                     }
                 }
             }

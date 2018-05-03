@@ -1,5 +1,6 @@
 ﻿using GitUIPluginInterfaces;
 using Neptuo;
+using Neptuo.Activators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,24 +11,25 @@ namespace GitExtensions.BundleBackuper.Services
 {
     public class GitUiCommandsBundleMapper : IGitBundleMapper, IGitBundleMapperNotification
     {
-        private readonly IGitUICommands commands;
+        private readonly IFactory<IGitUICommands> commandsFactory;
 
         public event Action<Bundle> Added;
         public event Action<Bundle> Removed;
 
-        public GitUiCommandsBundleMapper(IGitUICommands commands)
+        public GitUiCommandsBundleMapper(IFactory<IGitUICommands> commandsFactory)
         {
-            Ensure.NotNull(commands, "commands");
-            this.commands = commands;
+            Ensure.NotNull(commandsFactory, "commandsFactory");
+            this.commandsFactory = commandsFactory;
         }
 
         public bool Has(Bundle bundle)
-            => commands.GitModule.GetRemotes().Contains(bundle.Name);
+            => commandsFactory.Create().GitModule.GetRemotes().Contains(bundle.Name);
 
         public void Add(Bundle bundle)
         {
             if (!Has(bundle))
             {
+                IGitUICommands commands = commandsFactory.Create();
                 commands.GitModule.AddRemote(bundle.Name, bundle.FilePath);
                 Added?.Invoke(bundle);
             }
@@ -37,6 +39,7 @@ namespace GitExtensions.BundleBackuper.Services
         {
             if (Has(bundle))
             {
+                IGitUICommands commands = commandsFactory.Create();
                 commands.GitModule.RemoveRemote(bundle.Name);
                 Removed?.Invoke(bundle);
             }

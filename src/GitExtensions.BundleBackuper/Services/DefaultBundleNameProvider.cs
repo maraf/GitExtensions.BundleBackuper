@@ -1,5 +1,6 @@
 ﻿using GitUIPluginInterfaces;
 using Neptuo;
+using Neptuo.Activators;
 using Neptuo.Text.Tokens;
 using System;
 using System.Collections.Generic;
@@ -27,19 +28,21 @@ namespace GitExtensions.BundleBackuper.Services
         }
 
         private readonly PluginSettings settings;
-        private readonly IGitUICommands commands;
+        private readonly IFactory<IGitUICommands> commandsFactory;
 
-        public DefaultBundleNameProvider(PluginSettings settings, IGitUICommands commands)
+        public DefaultBundleNameProvider(PluginSettings settings, IFactory<IGitUICommands> commandsFactory)
         {
             Ensure.NotNull(settings, "settings");
-            Ensure.NotNull(commands, "commands");
+            Ensure.NotNull(commandsFactory, "commandsFactory");
             this.settings = settings;
-            this.commands = commands;
+            this.commandsFactory = commandsFactory;
         }
 
         public Bundle Get()
         {
             TokenWriter writer = new TokenWriter(settings.BackupTemplate);
+
+            IGitUICommands commands = commandsFactory.Create();
             string name = writer.Format(token =>
             {
                 // TODO: Map tokens to actual values.

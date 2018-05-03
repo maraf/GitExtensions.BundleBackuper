@@ -1,6 +1,7 @@
 ﻿using GitExtensions.BundleBackuper.Services;
 using GitUIPluginInterfaces;
 using Neptuo;
+using Neptuo.Activators;
 using Neptuo.Diagnostics;
 using System;
 using System.Collections.Generic;
@@ -15,17 +16,17 @@ namespace GitExtensions.BundleBackuper.UI
     public class AddButton : ToolStripMenuItem
     {
         private readonly IGitBundleMapper mapper;
-        private readonly IGitUICommands commands;
+        private readonly IFactory<IGitUICommands> commandsFactory;
         private readonly IBundleNameProvider nameProvider;
 
-        internal AddButton(IGitBundleMapper mapper, IGitUICommands commands, IBundleNameProvider nameProvider)
+        internal AddButton(IGitBundleMapper mapper, IFactory<IGitUICommands> commandsFactory, IBundleNameProvider nameProvider)
             : base("Backup current branch")
         {
             Ensure.NotNull(mapper, "mapper");
-            Ensure.NotNull(commands, "commands");
+            Ensure.NotNull(commandsFactory, "commandsFactory");
             Ensure.NotNull(nameProvider, "nameProvider");
             this.mapper = mapper;
-            this.commands = commands;
+            this.commandsFactory = commandsFactory;
             this.nameProvider = nameProvider;
 
             Click += OnClicked;
@@ -35,6 +36,8 @@ namespace GitExtensions.BundleBackuper.UI
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
+
+            IGitUICommands commands = commandsFactory.Create();
 
             int i = 0;
             while (true)

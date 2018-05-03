@@ -1,5 +1,6 @@
 ﻿using GitUIPluginInterfaces;
 using Neptuo;
+using Neptuo.Activators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,16 +12,16 @@ namespace GitExtensions.BundleBackuper.Services
     public class PreferedCommandAfterBundleExecutor : DisposableBase
     {
         private readonly PluginSettings settings;
-        private readonly IGitUICommands commands;
+        private readonly IFactory<IGitUICommands> commandsFactory;
         private readonly IGitBundleMapperNotification notifications;
 
-        internal PreferedCommandAfterBundleExecutor(PluginSettings settings, IGitUICommands commands, IGitBundleMapperNotification notifications)
+        internal PreferedCommandAfterBundleExecutor(PluginSettings settings, IFactory<IGitUICommands> commandsFactory, IGitBundleMapperNotification notifications)
         {
             Ensure.NotNull(settings, "settings");
-            Ensure.NotNull(commands, "commands");
+            Ensure.NotNull(commandsFactory, "commandsFactory");
             Ensure.NotNull(notifications, "notifications");
             this.settings = settings;
-            this.commands = commands;
+            this.commandsFactory = commandsFactory;
             this.notifications = notifications;
 
             notifications.Added += OnAdded;
@@ -47,6 +48,7 @@ namespace GitExtensions.BundleBackuper.Services
                 if (arguments.Contains("{0}"))
                     arguments = String.Format(arguments, bundle.Name);
 
+                IGitUICommands commands = commandsFactory.Create();
                 commands.StartGitCommandProcessDialog(arguments);
                 commands.RepoChangedNotifier.Notify();
             }
