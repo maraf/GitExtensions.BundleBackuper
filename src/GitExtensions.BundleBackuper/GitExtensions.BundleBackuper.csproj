@@ -10,6 +10,7 @@
     <PackageProjectUrl>http://www.neptuo.com/project/dev/gitextensions.bundlebackuper</PackageProjectUrl>
     <LangVersion>latest</LangVersion>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
