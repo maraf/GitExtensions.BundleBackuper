@@ -9,6 +9,6 @@ namespace GitExtensions.BundleBackuper.Services
 {
     public interface IBundleNameProvider
     {
-        string Get();
+        Bundle Get();
     }
 }

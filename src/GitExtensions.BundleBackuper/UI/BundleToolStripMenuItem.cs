@@ -1,4 +1,5 @@
 ﻿using GitExtensions.BundleBackuper.Services;
+using GitUIPluginInterfaces;
 using Neptuo;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace GitExtensions.BundleBackuper.UI
         private readonly ToolStripTextBox searchBox;
         private IEnumerable<Bundle> currentBundles;
 
-        internal BundleToolStripMenuItem(IBundleProvider provider, IGitBundleMapper mapper)
+        internal BundleToolStripMenuItem(IBundleProvider provider, IGitBundleMapper mapper, IGitUICommands commands, IBundleNameProvider nameProvider)
         {
             Ensure.NotNull(provider, "provider");
             Ensure.NotNull(mapper, "mapper");
@@ -39,7 +40,7 @@ namespace GitExtensions.BundleBackuper.UI
             searchBox.TextChanged += OnSearchBoxTextChanged;
             DropDown.Items.Add(searchBox);
             DropDown.Items.Add(new ToolStripSeparator());
-            DropDown.Items.Add(new AddButton(mapper));
+            DropDown.Items.Add(new AddButton(mapper, commands, nameProvider));
         }
 
         private void OnSearchBoxTextChanged(object sender, EventArgs e)

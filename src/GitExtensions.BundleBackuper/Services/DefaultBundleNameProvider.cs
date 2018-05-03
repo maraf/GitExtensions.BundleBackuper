@@ -27,10 +27,10 @@ namespace GitExtensions.BundleBackuper.Services
             this.commands = commands;
         }
 
-        public string Get()
+        public Bundle Get()
         {
             TokenWriter writer = new TokenWriter(settings.BackupTemplate);
-            return writer.Format(token =>
+            string name = writer.Format(token =>
             {
                 // TODO: Map tokens to actual values.
                 if (token == Token.BranchName)
@@ -38,6 +38,8 @@ namespace GitExtensions.BundleBackuper.Services
 
                 return token;
             });
+
+            return new Bundle(name, Path.Combine(settings.BackupPath, name));
         }
     }
 }
