@@ -51,7 +51,7 @@ namespace GitExtensions.BundleBackuper.Services
         public async Task<Bundle> CreateAsync()
         {
             IGitUICommands commands = commandsFactory.Create();
-            string commitId = await FindCommitId(commands);
+            string commitId = await FindLastPushedCommitIdAsync(commands);
             if (commitId != null)
             {
                 Bundle bundle = nameProvider.Get();
@@ -62,26 +62,20 @@ namespace GitExtensions.BundleBackuper.Services
             return null;
         }
 
-        private Task<string> FindCommitId(IGitUICommands commands)
+        private Task<string> FindLastPushedCommitIdAsync(IGitUICommands commands)
         {
             return Task.Factory.StartNew(() =>
             {
                 int i = 0;
                 while (true)
                 {
-                    string branches = commands.GitCommand($"branch -r --contains HEAD~{i}");
-                    Console.WriteLine(branches);
-
-                    if (!String.IsNullOrWhiteSpace(branches))
+                    string commitId = FindCommitIdIfPushed(commands, i);
+                    if (!String.IsNullOrWhiteSpace(commitId))
                     {
                         if (i > 0)
-                        {
-                            string commitId = commands.GitCommand($"rev-parse HEAD~{i}").Trim();
-                            if (!String.IsNullOrWhiteSpace(commitId))
-                                return commitId;
-                        }
-
-                        break;
+                            return commitId;
+                        else
+                            break;
                     }
                     else if (i > 1000) // TODO: Config or something.
                     {
@@ -93,6 +87,20 @@ namespace GitExtensions.BundleBackuper.Services
 
                 return null;
             });
+        }
+
+        private string FindCommitIdIfPushed(IGitUICommands commands, int headOffset)
+        {
+            string branches = commands.GitCommand($"branch -r --contains HEAD~{headOffset}");
+
+            if (!String.IsNullOrWhiteSpace(branches))
+            {
+                string commitId = commands.GitCommand($"rev-parse HEAD~{headOffset}").Trim();
+                if (!String.IsNullOrWhiteSpace(commitId))
+                    return commitId;
+            }
+
+            return null;
         }
     }
 }
