@@ -55,7 +55,7 @@ namespace GitExtensions.BundleBackuper.Services
             if (commitId != null)
             {
                 Bundle bundle = nameProvider.Get();
-                commands.StartGitCommandProcessDialog($"bundle create {bundle.FilePath} {commitId}..HEAD");
+                commands.StartGitCommandProcessDialog($"bundle create {bundle.FilePath} {commitId}..{commands.GitModule.GetSelectedBranch()}");
                 return bundle;
             }
 
