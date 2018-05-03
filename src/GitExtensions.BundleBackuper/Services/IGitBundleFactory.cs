@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace GitExtensions.BundleBackuper.Services
 {
+    /// <summary>
+    /// A factory creating new bundles.
+    /// </summary>
     public interface IGitBundleFactory
     {
+        /// <summary>
+        /// Creates a new backup for current branch.
+        /// </summary>
+        /// <returns>Returns continuation task, when resolved contains newly created bundle.</returns>
         Task<Bundle> CreateAsync();
     }
 }

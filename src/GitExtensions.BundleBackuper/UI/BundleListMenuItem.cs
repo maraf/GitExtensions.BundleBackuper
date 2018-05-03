@@ -10,6 +10,9 @@ using System.Windows.Forms;
 
 namespace GitExtensions.BundleBackuper.UI
 {
+    /// <summary>
+    /// Main menu item.
+    /// </summary>
     public class BundleListMenuItem : ToolStripMenuItem
     {
         private readonly IBundleProvider provider;
@@ -26,7 +29,7 @@ namespace GitExtensions.BundleBackuper.UI
             DropDownOpening += OnDropDownOpening;
             DropDownItemClicked += OnDropDownItemClicked;
 
-            DropDown.Items.Add(new AddButton(bundleFactory));
+            DropDown.Items.Add(new ManualBackupButton(bundleFactory));
         }
 
         private async void OnDropDownOpening(object sender, EventArgs e)

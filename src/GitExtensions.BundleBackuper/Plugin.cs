@@ -16,6 +16,9 @@ using System.Windows.Forms;
 
 namespace GitExtensions.BundleBackuper
 {
+    /// <summary>
+    /// GitExtensions plugin for backuping using bundles.
+    /// </summary>
     public class Plugin : GitPluginBase, IGitPluginForRepository, IFactory<IGitUICommands>
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();

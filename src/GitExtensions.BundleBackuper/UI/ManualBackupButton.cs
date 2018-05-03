@@ -13,11 +13,14 @@ using System.Windows.Forms;
 
 namespace GitExtensions.BundleBackuper.UI
 {
-    public class AddButton : ToolStripMenuItem
+    /// <summary>
+    /// Manual backup button.
+    /// </summary>
+    public class ManualBackupButton : ToolStripMenuItem
     {
         private readonly IGitBundleFactory bundleFactory;
 
-        internal AddButton(IGitBundleFactory bundleFactory)
+        internal ManualBackupButton(IGitBundleFactory bundleFactory)
             : base("Backup current branch")
         {
             Ensure.NotNull(bundleFactory, "bundleFactory");
