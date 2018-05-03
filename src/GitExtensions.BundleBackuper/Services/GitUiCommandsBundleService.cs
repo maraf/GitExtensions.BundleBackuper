@@ -66,23 +66,32 @@ namespace GitExtensions.BundleBackuper.Services
         {
             return Task.Factory.StartNew(() =>
             {
-                int i = 0;
-                while (true)
-                {
-                    string commitId = FindCommitIdIfPushed(commands, i);
-                    if (!String.IsNullOrWhiteSpace(commitId))
-                    {
-                        if (i > 0)
-                            return commitId;
-                        else
-                            break;
-                    }
-                    else if (i > 1000) // TODO: Config or something.
-                    {
-                        break;
-                    }
+                string commitId = FindCommitIdIfPushed(commands, 0);
+                if (!String.IsNullOrWhiteSpace(commitId))
+                    return null;
 
-                    i++;
+                int step = 20;
+                for (int i = step; i < 2000; i += step)
+                {
+                    if (IsCommitPushed(commands, i))
+                    {
+                        int headOffset = BinarySearch(i - step, i, offset =>
+                        {
+                            if (IsCommitPushed(commands, offset))
+                            {
+                                if (IsCommitPushed(commands, offset - 1))
+                                    return -1;
+                                else
+                                    return 0;
+                            }
+                            else
+                            {
+                                return 1;
+                            }
+                        });
+                        commitId = FindCommitId(commands, headOffset);
+                        return commitId;
+                    }
                 }
 
                 return null;
@@ -91,9 +100,7 @@ namespace GitExtensions.BundleBackuper.Services
 
         private string FindCommitIdIfPushed(IGitUICommands commands, int headOffset)
         {
-            string branches = commands.GitCommand($"branch -r --contains HEAD~{headOffset}");
-
-            if (!String.IsNullOrWhiteSpace(branches))
+            if (IsCommitPushed(commands, headOffset))
             {
                 string commitId = commands.GitCommand($"rev-parse HEAD~{headOffset}").Trim();
                 if (!String.IsNullOrWhiteSpace(commitId))
@@ -101,6 +108,44 @@ namespace GitExtensions.BundleBackuper.Services
             }
 
             return null;
+        }
+
+        private string FindCommitId(IGitUICommands commands, int headOffset)
+        {
+            string commitId = commands.GitCommand($"rev-parse HEAD~{headOffset}").Trim();
+            if (!String.IsNullOrWhiteSpace(commitId))
+                return commitId;
+
+            return null;
+        }
+
+        private bool IsCommitPushed(IGitUICommands commands, int headOffset)
+        {
+            string branches = commands.GitCommand($"branch -r --contains HEAD~{headOffset}");
+            return !String.IsNullOrWhiteSpace(branches);
+        }
+
+        private int BinarySearch(int start, int end, Func<int, int> predicate)
+        {
+            Ensure.PositiveOrZero(start, "start");
+            Ensure.Positive(end, "end");
+            if (start >= end)
+                throw Ensure.Exception.Argument("end", "End must be greater than start.");
+
+            int diff = end - start;
+            int median = start + (diff / 2);
+
+            switch (predicate(median))
+            {
+                case -1:
+                    return BinarySearch(start, median, predicate);
+                case 1:
+                    return BinarySearch(median, end, predicate);
+                case 0:
+                    return median;
+                default:
+                    throw Ensure.Exception.NotSupported("BinarySearch predicate must return -1, 0 or 1.");
+            }
         }
     }
 }
