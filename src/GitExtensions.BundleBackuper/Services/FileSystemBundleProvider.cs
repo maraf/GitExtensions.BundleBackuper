@@ -30,7 +30,7 @@ namespace GitExtensions.BundleBackuper.Services
                     result.Add(new Bundle(fileName, filePath));
                 }
 
-                result.Sort((b1, b2) => b2.Name.CompareTo(b1.Name));
+                result.Sort((b1, b2) => b1.Name.CompareTo(b2.Name));
                 return result;
             });
         }
