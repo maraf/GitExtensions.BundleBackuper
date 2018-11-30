@@ -116,7 +116,7 @@ namespace GitExtensions.BundleBackuper.Services
         private string FindCommitId(IGitUICommands commands, int headOffset)
         {
             string commitId = commands.GitModule.RunGitCmd($"rev-parse HEAD~{headOffset}").Trim();
-            if (!String.IsNullOrWhiteSpace(commitId))
+            if (!String.IsNullOrWhiteSpace(commitId) && !commitId.Contains(" "))
                 return commitId;
 
             return null;
@@ -124,7 +124,11 @@ namespace GitExtensions.BundleBackuper.Services
 
         private bool IsCommitPushed(IGitUICommands commands, int headOffset)
         {
-            string branches = commands.GitModule.RunGitCmd($"branch -r --contains HEAD~{headOffset}");
+            string commitId = FindCommitId(commands, headOffset);
+            if (string.IsNullOrEmpty(commitId))
+                return true;
+
+            string branches = commands.GitModule.RunGitCmd($"branch -r --contains {commitId}");
             return !String.IsNullOrWhiteSpace(branches);
         }
 
