@@ -1,5 +1,4 @@
 ﻿using GitExtensions.BundleBackuper.Services;
-using GitUIPluginInterfaces;
 using Neptuo;
 using Neptuo.Activators;
 using Neptuo.Diagnostics;

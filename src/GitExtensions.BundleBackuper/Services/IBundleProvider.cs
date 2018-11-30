@@ -12,6 +12,12 @@ namespace GitExtensions.BundleBackuper.Services
     public interface IBundleProvider
     {
         /// <summary>
+        /// Returns <c>true</c> if storage is available for reading.
+        /// </summary>
+        /// <returns><c>true</c> if storage is available for reading.</returns>
+        bool IsAvailable();
+
+        /// <summary>
         /// Enumerates all currently available backup bundles.
         /// </summary>
         /// <returns>Enumeration of all currently available backup bundles.</returns>

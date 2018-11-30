@@ -27,7 +27,6 @@ namespace GitExtensions.BundleBackuper.UI
 
             Text = "Bundles";
             DropDownOpening += OnDropDownOpening;
-            DropDownItemClicked += OnDropDownItemClicked;
 
             DropDown.Items.Add(new ManualBackupButton(bundleFactory));
             DropDown.Items.Add(new OpenBackupPathButton(settings));
@@ -35,11 +34,19 @@ namespace GitExtensions.BundleBackuper.UI
 
         private async void OnDropDownOpening(object sender, EventArgs e)
         {
-            foreach (var item in DropDown.Items.OfType<ToolStripItem>().Where(i => i.Tag is Bundle).ToList())
+            foreach (var item in DropDown.Items.OfType<BundleMapMenuItem>().ToList())
                 DropDown.Items.Remove(item);
 
             if (DropDown.Items.Count == 3)
                 DropDown.Items.RemoveAt(2);
+
+            if (!provider.IsAvailable())
+            {
+                SetItemsEnabled(false);
+                return;
+            }
+
+            SetItemsEnabled(true);
 
             IEnumerable<Bundle> currentBundles = await provider.EnumerateAsync();
             foreach (Bundle bundle in currentBundles)
@@ -47,30 +54,14 @@ namespace GitExtensions.BundleBackuper.UI
                 if (DropDown.Items.Count <= 2)
                     DropDown.Items.Add(new ToolStripSeparator());
 
-                DropDown.Items.Add(new ToolStripMenuItem(bundle.Name)
-                {
-                    Tag = bundle,
-                    Checked = mapper.Has(bundle)
-                });
+                DropDown.Items.Add(new BundleMapMenuItem(mapper, bundle));
             }
         }
 
-        private void OnDropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private void SetItemsEnabled(bool isEnabled)
         {
-            if (e.ClickedItem is ToolStripMenuItem target && target.Tag is Bundle bundle)
-            {
-                if (target.Checked)
-                {
-                    mapper.Remove(bundle);
-                }
-                else
-                {
-                    if (!String.IsNullOrEmpty(bundle.FilePath) && File.Exists(bundle.FilePath))
-                        mapper.Add(bundle);
-                    else
-                        MessageBox.Show($"File '{bundle.FilePath}' doesn't exist or is not accessible.");
-                }
-            }
+            for (int i = 0; i < DropDown.Items.Count; i++)
+                DropDown.Items[i].Enabled = isEnabled;
         }
     }
 }
