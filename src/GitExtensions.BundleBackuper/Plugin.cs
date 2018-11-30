@@ -1,4 +1,5 @@
-﻿using GitExtensions.BundleBackuper.Services;
+﻿using GitExtensions.BundleBackuper.Properties;
+using GitExtensions.BundleBackuper.Services;
 using GitExtensions.BundleBackuper.UI;
 using GitUI;
 using GitUI.CommandsDialogs;
@@ -32,6 +33,7 @@ namespace GitExtensions.BundleBackuper
         {
             Name = "Bundle Backuper";
             Description = "Branch Bundle Backuping";
+            Icon = Resources.Icon;
         }
 
         GitUICommands IFactory<GitUICommands>.Create()
