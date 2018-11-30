@@ -18,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="GitExtUtils">
+      <HintPath>..\..\references\GitExtensions\GitExtUtils.dll</HintPath>
+    </Reference>
     <Reference Include="GitUI">
       <HintPath>..\..\references\GitExtensions\GitUI.dll</HintPath>
     </Reference>
@@ -27,6 +30,7 @@
     <Reference Include="ResourceManager">
       <HintPath>..\..\references\GitExtensions\ResourceManager.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 

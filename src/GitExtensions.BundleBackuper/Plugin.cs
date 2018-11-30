@@ -8,6 +8,7 @@ using Neptuo.Activators;
 using ResourceManager;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,10 +20,11 @@ namespace GitExtensions.BundleBackuper
     /// <summary>
     /// GitExtensions plugin for backuping using bundles.
     /// </summary>
-    public class Plugin : GitPluginBase, IGitPluginForRepository, IFactory<IGitUICommands>
+    [Export(typeof(IGitPlugin))]
+    public class Plugin : GitPluginBase, IGitPluginForRepository, IFactory<GitUICommands>
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();
-        private IGitUICommands commands;
+        private GitUICommands commands;
 
         internal PluginSettings Configuration { get; private set; }
 
@@ -32,10 +34,10 @@ namespace GitExtensions.BundleBackuper
             Description = "Branch Bundle Backuping";
         }
 
-        IGitUICommands IFactory<IGitUICommands>.Create()
+        GitUICommands IFactory<GitUICommands>.Create()
             => commands ?? throw Ensure.Exception.NotSupported("Plugin is not yet registered.");
 
-        public override bool Execute(GitUIBaseEventArgs gitUiCommands)
+        public override bool Execute(GitUIEventArgs gitUiCommands)
             => true;
 
         public override IEnumerable<ISetting> GetSettings()
@@ -43,7 +45,7 @@ namespace GitExtensions.BundleBackuper
 
         private MenuStripEx FindMainMenu(IGitUICommands commands)
         {
-            FormBrowse form = (FormBrowse)commands.BrowseRepo;
+            FormBrowse form = (FormBrowse)((GitUICommands)commands).BrowseRepo;
             if (form != null)
             {
                 MenuStripEx mainMenu = form.Controls.OfType<MenuStripEx>().FirstOrDefault();
@@ -68,7 +70,7 @@ namespace GitExtensions.BundleBackuper
         {
             base.Register(commands);
 
-            this.commands = commands;
+            this.commands = (GitUICommands)commands;
             Configuration = new PluginSettings(Settings);
 
             if (commands.GitModule.IsValidGitWorkingDir())

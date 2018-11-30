@@ -1,4 +1,7 @@
-﻿using GitUIPluginInterfaces;
+﻿using GitCommands;
+using GitUI;
+using GitUI.CommandsDialogs;
+using GitUIPluginInterfaces;
 using Neptuo;
 using Neptuo.Activators;
 using System;
@@ -11,13 +14,13 @@ namespace GitExtensions.BundleBackuper.Services
 {
     public class GitUiCommandsBundleService : IGitBundleMapper, IGitBundleMapperNotification, IGitBundleFactory
     {
-        private readonly IFactory<IGitUICommands> commandsFactory;
+        private readonly IFactory<GitUICommands> commandsFactory;
         private readonly IBundleNameProvider nameProvider;
 
         public event Action<Bundle> Added;
         public event Action<Bundle> Removed;
 
-        public GitUiCommandsBundleService(IFactory<IGitUICommands> commandsFactory, IBundleNameProvider nameProvider)
+        public GitUiCommandsBundleService(IFactory<GitUICommands> commandsFactory, IBundleNameProvider nameProvider)
         {
             Ensure.NotNull(commandsFactory, "commandsFactory");
             Ensure.NotNull(nameProvider, "nameProvider");
@@ -26,7 +29,7 @@ namespace GitExtensions.BundleBackuper.Services
         }
 
         public bool Has(Bundle bundle)
-            => commandsFactory.Create().GitModule.GetRemotes().Contains(bundle.Name);
+            => commandsFactory.Create().GitModule.GetRemoteNames().Contains(bundle.Name);
 
         public void Add(Bundle bundle)
         {
@@ -50,12 +53,12 @@ namespace GitExtensions.BundleBackuper.Services
 
         public async Task<Bundle> CreateAsync()
         {
-            IGitUICommands commands = commandsFactory.Create();
+            GitUICommands commands = commandsFactory.Create();
             string commitId = await FindLastPushedCommitIdAsync(commands);
             if (commitId != null)
             {
                 Bundle bundle = nameProvider.Get();
-                commands.StartGitCommandProcessDialog($"bundle create {bundle.FilePath} {commitId}..{commands.GitModule.GetSelectedBranch()}");
+                commands.StartGitCommandProcessDialog((FormBrowse)commands.BrowseRepo, $"bundle create {bundle.FilePath} {commitId}..{commands.GitModule.GetSelectedBranch()}");
                 return bundle;
             }
 
@@ -102,7 +105,7 @@ namespace GitExtensions.BundleBackuper.Services
         {
             if (IsCommitPushed(commands, headOffset))
             {
-                string commitId = commands.GitCommand($"rev-parse HEAD~{headOffset}").Trim();
+                string commitId = commands.GitModule.RunGitCmd($"rev-parse HEAD~{headOffset}").Trim();
                 if (!String.IsNullOrWhiteSpace(commitId))
                     return commitId;
             }
@@ -112,7 +115,7 @@ namespace GitExtensions.BundleBackuper.Services
 
         private string FindCommitId(IGitUICommands commands, int headOffset)
         {
-            string commitId = commands.GitCommand($"rev-parse HEAD~{headOffset}").Trim();
+            string commitId = commands.GitModule.RunGitCmd($"rev-parse HEAD~{headOffset}").Trim();
             if (!String.IsNullOrWhiteSpace(commitId))
                 return commitId;
 
@@ -121,7 +124,7 @@ namespace GitExtensions.BundleBackuper.Services
 
         private bool IsCommitPushed(IGitUICommands commands, int headOffset)
         {
-            string branches = commands.GitCommand($"branch -r --contains HEAD~{headOffset}");
+            string branches = commands.GitModule.RunGitCmd($"branch -r --contains HEAD~{headOffset}");
             return !String.IsNullOrWhiteSpace(branches);
         }
 
