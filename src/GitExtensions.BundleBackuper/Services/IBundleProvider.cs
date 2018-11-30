@@ -21,6 +21,6 @@ namespace GitExtensions.BundleBackuper.Services
         /// Enumerates all currently available backup bundles.
         /// </summary>
         /// <returns>Enumeration of all currently available backup bundles.</returns>
-        Task<IEnumerable<Bundle>> EnumerateAsync();
+        Task<IReadOnlyCollection<Bundle>> EnumerateAsync();
     }
 }

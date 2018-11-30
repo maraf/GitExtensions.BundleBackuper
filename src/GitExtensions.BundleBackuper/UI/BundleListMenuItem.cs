@@ -47,15 +47,26 @@ namespace GitExtensions.BundleBackuper.UI
             }
 
             SetItemsEnabled(true);
+            DropDown.Items.AddRange(await CreateBundleItemsAsync());
+        }
 
-            IEnumerable<Bundle> currentBundles = await provider.EnumerateAsync();
-            foreach (Bundle bundle in currentBundles)
+        private async Task<ToolStripItem[]> CreateBundleItemsAsync()
+        {
+            return await Task.Run(async () =>
             {
-                if (DropDown.Items.Count <= 2)
-                    DropDown.Items.Add(new ToolStripSeparator());
+                IReadOnlyCollection<Bundle> currentBundles = await provider.EnumerateAsync().ConfigureAwait(false);
+                List<ToolStripItem> newItems = new List<ToolStripItem>(currentBundles.Count + 1);
 
-                DropDown.Items.Add(new BundleMapMenuItem(mapper, bundle));
-            }
+                foreach (Bundle bundle in currentBundles)
+                {
+                    if (newItems.Count == 0)
+                        newItems.Add(new ToolStripSeparator());
+
+                    newItems.Add(new BundleMapMenuItem(mapper, bundle));
+                }
+
+                return newItems.ToArray();
+            });
         }
 
         private void SetItemsEnabled(bool isEnabled)

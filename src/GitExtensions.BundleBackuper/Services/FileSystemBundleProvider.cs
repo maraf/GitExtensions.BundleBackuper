@@ -21,9 +21,9 @@ namespace GitExtensions.BundleBackuper.Services
         public bool IsAvailable()
             => Directory.Exists(settings.BackupPath);
 
-        public Task<IEnumerable<Bundle>> EnumerateAsync()
+        public Task<IReadOnlyCollection<Bundle>> EnumerateAsync()
         {
-            return Task.Factory.StartNew<IEnumerable<Bundle>>(() =>
+            return Task.Run<IReadOnlyCollection<Bundle>>(() =>
             {
                 IEnumerable<string> filePaths = Directory.EnumerateFiles(settings.BackupPath, "*.bundle", SearchOption.AllDirectories);
                 List<Bundle> result = new List<Bundle>();
