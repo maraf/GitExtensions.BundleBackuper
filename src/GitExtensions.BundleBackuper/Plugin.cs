@@ -83,7 +83,7 @@ namespace GitExtensions.BundleBackuper
                     var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, this, service);
                     disposables.Add(preferedExecutor);
 
-                    mainMenu.Items.Add(new BundleListMenuItem(provider, service, service));
+                    mainMenu.Items.Add(new BundleListMenuItem(provider, service, service, Configuration));
                 }
             }
         }

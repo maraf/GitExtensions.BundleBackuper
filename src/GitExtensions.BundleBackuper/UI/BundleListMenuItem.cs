@@ -18,7 +18,7 @@ namespace GitExtensions.BundleBackuper.UI
         private readonly IBundleProvider provider;
         private readonly IGitBundleMapper mapper;
 
-        internal BundleListMenuItem(IBundleProvider provider, IGitBundleMapper mapper, IGitBundleFactory bundleFactory)
+        internal BundleListMenuItem(IBundleProvider provider, IGitBundleMapper mapper, IGitBundleFactory bundleFactory, PluginSettings settings)
         {
             Ensure.NotNull(provider, "provider");
             Ensure.NotNull(mapper, "mapper");
@@ -30,6 +30,7 @@ namespace GitExtensions.BundleBackuper.UI
             DropDownItemClicked += OnDropDownItemClicked;
 
             DropDown.Items.Add(new ManualBackupButton(bundleFactory));
+            DropDown.Items.Add(new OpenBackupPathButton(settings));
         }
 
         private async void OnDropDownOpening(object sender, EventArgs e)
@@ -37,13 +38,13 @@ namespace GitExtensions.BundleBackuper.UI
             foreach (var item in DropDown.Items.OfType<ToolStripItem>().Where(i => i.Tag is Bundle).ToList())
                 DropDown.Items.Remove(item);
 
-            if (DropDown.Items.Count == 2)
-                DropDown.Items.RemoveAt(1);
+            if (DropDown.Items.Count == 3)
+                DropDown.Items.RemoveAt(2);
 
             IEnumerable<Bundle> currentBundles = await provider.EnumerateAsync();
             foreach (Bundle bundle in currentBundles)
             {
-                if (DropDown.Items.Count <= 1)
+                if (DropDown.Items.Count <= 2)
                     DropDown.Items.Add(new ToolStripSeparator());
 
                 DropDown.Items.Add(new ToolStripMenuItem(bundle.Name)
