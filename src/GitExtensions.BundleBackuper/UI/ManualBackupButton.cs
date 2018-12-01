@@ -1,4 +1,5 @@
-﻿using GitExtensions.BundleBackuper.Services;
+﻿using GitExtensions.BundleBackuper.Properties;
+using GitExtensions.BundleBackuper.Services;
 using Neptuo;
 using Neptuo.Activators;
 using Neptuo.Diagnostics;
@@ -20,7 +21,7 @@ namespace GitExtensions.BundleBackuper.UI
         private readonly IGitBundleFactory bundleFactory;
 
         internal ManualBackupButton(IGitBundleFactory bundleFactory)
-            : base("Backup current branch")
+            : base("Backup current branch", Resources.BackupIcon)
         {
             Ensure.NotNull(bundleFactory, "bundleFactory");
             this.bundleFactory = bundleFactory;
