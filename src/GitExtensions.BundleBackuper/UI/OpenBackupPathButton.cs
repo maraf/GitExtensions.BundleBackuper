@@ -1,4 +1,5 @@
-﻿using Neptuo;
+﻿using GitUI.Properties;
+using Neptuo;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +18,7 @@ namespace GitExtensions.BundleBackuper.UI
         private readonly PluginSettings settings;
 
         internal OpenBackupPathButton(PluginSettings settings)
-            : base("Open backup path")
+            : base("Open backup path", Images.BrowseFileExplorer)
         {
             Ensure.NotNull(settings, "settings");
             this.settings = settings;
