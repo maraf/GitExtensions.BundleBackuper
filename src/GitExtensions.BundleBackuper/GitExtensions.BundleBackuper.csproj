@@ -2,20 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <Authors>Maraf</Authors>
-    <Company>Neptuo</Company>
     <Description>Branch backuping extension for GitExtensions</Description>
-    <RepositoryUrl>https://github.com/maraf/GitExtensions.BundleBackuper</RepositoryUrl>
     <PackageTags>Neptuo GitExtensions</PackageTags>
-    <PackageProjectUrl>http://www.neptuo.com/project/dev/gitextensions.bundlebackuper</PackageProjectUrl>
-    <LangVersion>latest</LangVersion>
+    <PackageProjectUrl>https://www.neptuo.com/project/dev/gitextensions.bundlebackuper</PackageProjectUrl>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Neptuo" Version="5.5.0" />
-  </ItemGroup>
+  <PropertyGroup>
+    <GitExtensionsDebugPluginsPath>..\..\references\GitExtensions\Plugins\</GitExtensionsDebugPluginsPath>
+  </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="GitExtUtils">
@@ -50,7 +46,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(TargetDir)Neptuo.dll&quot; &quot;..\..\references\GitExtensions\Plugins\Neptuo.dll&quot;&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;..\..\references\GitExtensions\Plugins\$(TargetFileName)&quot;" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GitExtensionsDebugPluginsPath)" />
   </Target>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
