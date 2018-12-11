@@ -6,7 +6,8 @@
     <PackageTags>Neptuo GitExtensions</PackageTags>
     <PackageProjectUrl>https://www.neptuo.com/project/dev/gitextensions.bundlebackuper</PackageProjectUrl>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NuspecFile>$(MSBuildThisFileDirectory)$(MSBuildProjectName).nuspec</NuspecFile>
+    <NoWarn>1701;1702;NU5100</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -53,4 +54,27 @@
     <Exec Command="powershell.exe ..\..\tools\Download-GitExtensions.ps1" />
   </Target>
 
+  <Target Name="SetPackageProperties" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <NuspecProperties>
+        id=$(PackageId);
+        version=$(PackageVersion);
+        configuration=$(Configuration);
+        tags=$(PackageTags.Replace(';',' '));
+        projectUrl=$(PackageProjectUrl);
+        iconUrl=$(PackageIconUrl);
+        repositoryUrl=$(RepositoryUrl);
+        repositoryType=$(RepositoryType);
+        repositoryCommit=$(RepositoryCommit);
+        author=$(Authors);
+        copyright=$(Copyright);
+        description=$(Description);
+        targetDir=$(TargetDir);
+      </NuspecProperties>
+    </PropertyGroup>
+  </Target>
+  
+  <Target Name="Zip" AfterTargets="Pack">
+    <Exec Command="powershell $(MSBuildProjectDirectory)\..\..\tools\Zip-GitExtensionsPlugin.ps1 -Version $(PackageVersion) -Configuration $(Configuration)" />
+  </Target>
 </Project>
