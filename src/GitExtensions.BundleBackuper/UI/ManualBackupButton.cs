@@ -1,8 +1,6 @@
 ﻿using GitExtensions.BundleBackuper.Properties;
 using GitExtensions.BundleBackuper.Services;
 using Neptuo;
-using Neptuo.Activators;
-using Neptuo.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
