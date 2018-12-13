@@ -10,6 +10,7 @@ using ResourceManager;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,7 +41,10 @@ namespace GitExtensions.BundleBackuper
             => commands ?? throw Ensure.Exception.NotSupported("Plugin is not yet registered.");
 
         public override bool Execute(GitUIEventArgs gitUiCommands)
-            => true;
+        {
+            Process.Start("https://github.com/maraf/GitExtensions.BundleBackuper");
+            return true;
+        }
 
         public override IEnumerable<ISetting> GetSettings()
             => Configuration;
