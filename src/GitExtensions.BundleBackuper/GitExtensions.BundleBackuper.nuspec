@@ -12,6 +12,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin/$configuration$/net461/GitExtensions.BundleBackuper.dll" target="/" />
+    <file src="bin/$configuration$/net461/GitExtensions.BundleBackuper.dll" target="/lib" />
   </files>
 </package>
