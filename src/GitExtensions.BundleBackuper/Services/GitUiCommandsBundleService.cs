@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GitExtensions.BundleBackuper.Services
 {
-    public class GitUiCommandsBundleService : IGitBundleMapper, IGitBundleMapperNotification, IGitBundleFactory
+    public partial class GitUiCommandsBundleService : IGitBundleMapper, IGitBundleMapperNotification, IGitBundleFactory
     {
         private readonly IFactory<GitUICommands> commandsFactory;
         private readonly IBundleNameProvider nameProvider;
@@ -54,24 +54,34 @@ namespace GitExtensions.BundleBackuper.Services
         public async Task<Bundle> CreateAsync()
         {
             GitUICommands commands = commandsFactory.Create();
-            string commitId = await FindLastPushedCommitIdAsync(commands);
-            if (commitId != null)
+
+            Tuple<FindCommitResult, string> result = await FindLastPushedCommitIdAsync(commands);
+            if (result.Item1 != FindCommitResult.NotFound)
             {
                 Bundle bundle = nameProvider.Get();
-                commands.StartGitCommandProcessDialog((FormBrowse)commands.BrowseRepo, $"bundle create {bundle.FilePath} {commitId}..{commands.GitModule.GetSelectedBranch()}");
+
+                string arguments = null;
+                if (result.Item1 == FindCommitResult.BaseFound)
+                    arguments = $"bundle create {bundle.FilePath} {result.Item2}..{commands.GitModule.GetSelectedBranch()}";
+                else if (result.Item1 == FindCommitResult.WithoutBase)
+                    arguments = $"bundle create {bundle.FilePath} {commands.GitModule.GetSelectedBranch()}";
+                else
+                    Ensure.Exception.NotSupported(result.Item1);
+
+                commands.StartGitCommandProcessDialog((FormBrowse)commands.BrowseRepo, arguments);
                 return bundle;
             }
 
             return null;
         }
 
-        private Task<string> FindLastPushedCommitIdAsync(IGitUICommands commands)
+        private Task<Tuple<FindCommitResult, string>> FindLastPushedCommitIdAsync(IGitUICommands commands)
         {
             return Task.Factory.StartNew(() =>
             {
                 string commitId = FindCommitIdIfPushed(commands, 0);
                 if (!String.IsNullOrWhiteSpace(commitId))
-                    return null;
+                    return new Tuple<FindCommitResult, string>(FindCommitResult.NotFound, (string)null);
 
                 int step = 20;
                 for (int i = step; i < 2000; i += step)
@@ -92,12 +102,19 @@ namespace GitExtensions.BundleBackuper.Services
                                 return 1;
                             }
                         });
+
+                        if (headOffset == 0)
+                            return new Tuple<FindCommitResult, string>(FindCommitResult.NotFound, null);
+
                         commitId = FindCommitId(commands, headOffset);
-                        return commitId;
+                        if (commitId == null)
+                            return new Tuple<FindCommitResult, string>(FindCommitResult.WithoutBase, null);
+
+                        return new Tuple<FindCommitResult, string>(FindCommitResult.BaseFound, commitId);
                     }
                 }
 
-                return null;
+                return new Tuple<FindCommitResult, string>(FindCommitResult.NotFound, null);
             });
         }
 
