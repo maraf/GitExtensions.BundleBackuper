@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <Description>Branch backuping plugin for GitExtensions.
-This plugin lets create a .bundle containing all unpublished commits.</Description>
+This plugin lets you create a .bundle containing all unpublished commits.</Description>
     <PackageTags>Neptuo GitExtensions</PackageTags>
     <PackageProjectUrl>https://www.neptuo.com/project/dev/gitextensions.bundlebackuper</PackageProjectUrl>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
