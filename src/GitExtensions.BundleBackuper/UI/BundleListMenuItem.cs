@@ -37,8 +37,7 @@ namespace GitExtensions.BundleBackuper.UI
             foreach (var item in DropDown.Items.OfType<BundleMapMenuItem>().ToList())
                 DropDown.Items.Remove(item);
 
-            if (DropDown.Items.Count == 3)
-                DropDown.Items.RemoveAt(2);
+            RemoveLastSeparator();
 
             if (!provider.IsAvailable())
             {
@@ -46,8 +45,20 @@ namespace GitExtensions.BundleBackuper.UI
                 return;
             }
 
+            DropDown.Items.Add(new ToolStripSeparator());
+            DropDown.Items.Add(new LoadingMenuItem());
+
             SetItemsEnabled(true);
             DropDown.Items.AddRange(await CreateBundleItemsAsync());
+
+            DropDown.Items.Remove(DropDown.Items.OfType<LoadingMenuItem>().First());
+            RemoveLastSeparator();
+        }
+
+        private void RemoveLastSeparator()
+        {
+            if (DropDown.Items.Count == 3)
+                DropDown.Items.RemoveAt(2);
         }
 
         private async Task<ToolStripItem[]> CreateBundleItemsAsync()
@@ -58,12 +69,7 @@ namespace GitExtensions.BundleBackuper.UI
                 List<ToolStripItem> newItems = new List<ToolStripItem>(currentBundles.Count + 1);
 
                 foreach (Bundle bundle in currentBundles)
-                {
-                    if (newItems.Count == 0)
-                        newItems.Add(new ToolStripSeparator());
-
                     newItems.Add(new BundleMapMenuItem(mapper, bundle));
-                }
 
                 return newItems.ToArray();
             });
