@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace GitExtensions.BundleBackuper.Services
 {
     /// <summary>
-    /// Provides notifications about bundle backup operations.
+    /// Provides notifications about bundle backup mapping operations.
     /// </summary>
     public interface IGitBundleMapperNotification
     {

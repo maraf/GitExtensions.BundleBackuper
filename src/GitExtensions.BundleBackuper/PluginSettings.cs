@@ -32,6 +32,11 @@ namespace GitExtensions.BundleBackuper
         /// </summary>
         public static StringSetting AfterRemoveRemoteProperty { get; } = new StringSetting("After Add Remote", "Command to run after remote is removed ({0} = remote name)", "fetch --all");
 
+        /// <summary>
+        /// Gets a <c>true</c> if backup path should be copied to clipboard after backup.
+        /// </summary>
+        public static BoolSetting IsBackupPathCopiedToClipboardProperty { get; } = new BoolSetting("Copy path to clipboard", "Copy path to clipboard after backup", false);
+
         private readonly ISettingsSource source;
 
         /// <summary>
@@ -54,6 +59,11 @@ namespace GitExtensions.BundleBackuper
         /// </summary>
         public string AfterRemoveRemote => source.GetValue(AfterRemoveRemoteProperty.Name, AfterRemoveRemoteProperty.DefaultValue, t => t);
 
+        /// <summary>
+        /// Gets current value of <see cref="IsBackupPathCopiedToClipboardProperty"/>.
+        /// </summary>
+        public bool IsBackupPathCopiedToClipboard => source.GetValue(IsBackupPathCopiedToClipboardProperty.Name, IsBackupPathCopiedToClipboardProperty.DefaultValue, t => Boolean.Parse(t));
+
         public PluginSettings(ISettingsSource source)
         {
             Ensure.NotNull(source, "source");
@@ -71,7 +81,8 @@ namespace GitExtensions.BundleBackuper
                 BackupPathProperty,
                 BackupTemplateProperty,
                 AfterAddRemoteProperty,
-                AfterRemoveRemoteProperty
+                AfterRemoveRemoteProperty,
+                IsBackupPathCopiedToClipboardProperty
             };
         }
 

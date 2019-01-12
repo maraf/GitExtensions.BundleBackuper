@@ -86,8 +86,8 @@ namespace GitExtensions.BundleBackuper
                 {
                     var provider = new FileSystemBundleProvider(Configuration);
                     var service = new GitUiCommandsBundleService(this, new DefaultBundleNameProvider(Configuration, this));
-                    var preferedExecutor = new PreferedCommandAfterBundleExecutor(Configuration, this, service);
-                    disposables.Add(preferedExecutor);
+                    disposables.Add(new PreferedCommandAfterBundleExecutor(Configuration, this, service));
+                    disposables.Add(new CopyPathToClipboardExecutor(Configuration, service));
 
                     mainMenu.Items.Add(new BundleListMenuItem(provider, service, service, Configuration));
                 }

@@ -12,13 +12,14 @@ using System.Threading.Tasks;
 
 namespace GitExtensions.BundleBackuper.Services
 {
-    public partial class GitUiCommandsBundleService : IGitBundleMapper, IGitBundleMapperNotification, IGitBundleFactory
+    public partial class GitUiCommandsBundleService : IGitBundleMapper, IGitBundleMapperNotification, IGitBundleFactory, IGitBundleFactoryNotification
     {
         private readonly IFactory<GitUICommands> commandsFactory;
         private readonly IBundleNameProvider nameProvider;
 
         public event Action<Bundle> Added;
         public event Action<Bundle> Removed;
+        public event Action<Bundle> Created;
 
         public GitUiCommandsBundleService(IFactory<GitUICommands> commandsFactory, IBundleNameProvider nameProvider)
         {
@@ -69,6 +70,8 @@ namespace GitExtensions.BundleBackuper.Services
                     Ensure.Exception.NotSupported(result.Item1);
 
                 commands.StartGitCommandProcessDialog((FormBrowse)commands.BrowseRepo, arguments);
+
+                Created?.Invoke(bundle);
                 return bundle;
             }
 
