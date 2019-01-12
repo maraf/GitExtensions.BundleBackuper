@@ -37,7 +37,12 @@ namespace GitExtensions.BundleBackuper.UI
             foreach (var item in DropDown.Items.OfType<BundleMapMenuItem>().ToList())
                 DropDown.Items.Remove(item);
 
-            RemoveLastSeparator();
+            NoDataMenuItem noData = DropDown.Items.OfType<NoDataMenuItem>().FirstOrDefault();
+            if (noData != null)
+                DropDown.Items.Remove(noData);
+
+            if (DropDown.Items.Count == 3)
+                DropDown.Items.RemoveAt(2);
 
             if (!provider.IsAvailable())
             {
@@ -46,19 +51,12 @@ namespace GitExtensions.BundleBackuper.UI
             }
 
             DropDown.Items.Add(new ToolStripSeparator());
-            DropDown.Items.Add(new LoadingMenuItem());
+            int loadingIndex = DropDown.Items.Add(new LoadingMenuItem());
 
             SetItemsEnabled(true);
             DropDown.Items.AddRange(await CreateBundleItemsAsync());
 
-            DropDown.Items.Remove(DropDown.Items.OfType<LoadingMenuItem>().First());
-            RemoveLastSeparator();
-        }
-
-        private void RemoveLastSeparator()
-        {
-            if (DropDown.Items.Count == 3)
-                DropDown.Items.RemoveAt(2);
+            DropDown.Items.RemoveAt(loadingIndex);
         }
 
         private async Task<ToolStripItem[]> CreateBundleItemsAsync()
@@ -66,10 +64,13 @@ namespace GitExtensions.BundleBackuper.UI
             return await Task.Run(async () =>
             {
                 IReadOnlyCollection<Bundle> currentBundles = await provider.EnumerateAsync().ConfigureAwait(false);
-                List<ToolStripItem> newItems = new List<ToolStripItem>(currentBundles.Count + 1);
+                List<ToolStripItem> newItems = new List<ToolStripItem>(Math.Max(currentBundles.Count, 1));
 
                 foreach (Bundle bundle in currentBundles)
                     newItems.Add(new BundleMapMenuItem(mapper, bundle));
+
+                if (newItems.Count == 0)
+                    newItems.Add(new NoDataMenuItem());
 
                 return newItems.ToArray();
             });

@@ -8,12 +8,12 @@ using System.Windows.Forms;
 namespace GitExtensions.BundleBackuper.UI
 {
     /// <summary>
-    /// A loading state menu item.
+    /// A menu item with no data message.
     /// </summary>
-    public class LoadingMenuItem : ToolStripMenuItem
+    public class NoDataMenuItem : ToolStripMenuItem
     {
-        public LoadingMenuItem()
-            : base("Loading...")
+        public NoDataMenuItem()
+            : base("Nothing found...")
         {
             Enabled = false;
         }
