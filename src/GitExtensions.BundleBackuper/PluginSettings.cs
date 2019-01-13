@@ -37,6 +37,11 @@ namespace GitExtensions.BundleBackuper
         /// </summary>
         public static BoolSetting IsBackupPathCopiedToClipboardProperty { get; } = new BoolSetting("Copy path to clipboard", "Copy path to clipboard after backup", false);
 
+        /// <summary>
+        /// Gets a <c>true</c> if overriding backup must be confirmed.
+        /// </summary>
+        public static BoolSetting IsBackupOverrideCofirmableProperty { get; } = new BoolSetting("Ask before overriding backup", "Show confirmation message before overriding backup file", false);
+
         private readonly ISettingsSource source;
 
         /// <summary>
@@ -64,6 +69,11 @@ namespace GitExtensions.BundleBackuper
         /// </summary>
         public bool IsBackupPathCopiedToClipboard => source.GetValue(IsBackupPathCopiedToClipboardProperty.Name, IsBackupPathCopiedToClipboardProperty.DefaultValue, t => Boolean.Parse(t));
 
+        /// <summary>
+        /// Gets current value of <see cref="IsBackupOverrideCofirmableProperty"/>.
+        /// </summary>
+        public bool IsBackupOverrideCofirmable => source.GetValue(IsBackupOverrideCofirmableProperty.Name, IsBackupOverrideCofirmableProperty.DefaultValue, t => Boolean.Parse(t));
+
         public PluginSettings(ISettingsSource source)
         {
             Ensure.NotNull(source, "source");
@@ -82,7 +92,8 @@ namespace GitExtensions.BundleBackuper
                 BackupTemplateProperty,
                 AfterAddRemoteProperty,
                 AfterRemoveRemoteProperty,
-                IsBackupPathCopiedToClipboardProperty
+                IsBackupPathCopiedToClipboardProperty,
+                IsBackupOverrideCofirmableProperty
             };
         }
 

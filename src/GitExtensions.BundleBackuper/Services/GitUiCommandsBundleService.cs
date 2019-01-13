@@ -6,6 +6,7 @@ using Neptuo;
 using Neptuo.Activators;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace GitExtensions.BundleBackuper.Services
 
         public event Action<Bundle> Added;
         public event Action<Bundle> Removed;
+        public event Action<Bundle, CancelEventArgs> Creating;
         public event Action<Bundle> Created;
 
         public GitUiCommandsBundleService(IFactory<GitUICommands> commandsFactory, IBundleNameProvider nameProvider)
@@ -60,6 +62,15 @@ namespace GitExtensions.BundleBackuper.Services
             if (result.Item1 != FindCommitResult.NotFound)
             {
                 Bundle bundle = nameProvider.Get();
+
+                if (Creating != null)
+                {
+                    var args = new CancelEventArgs();
+                    Creating(bundle, args);
+
+                    if (args.Cancel)
+                        return null;
+                }
 
                 string arguments = null;
                 if (result.Item1 == FindCommitResult.BaseFound)

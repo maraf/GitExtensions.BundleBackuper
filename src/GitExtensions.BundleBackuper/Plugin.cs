@@ -51,7 +51,7 @@ namespace GitExtensions.BundleBackuper
 
         private MenuStripEx FindMainMenu(IGitUICommands commands)
         {
-            FormBrowse form = (FormBrowse)((GitUICommands)commands).BrowseRepo;
+            FormBrowse form = FindForm(commands);
             if (form != null)
             {
                 MenuStripEx mainMenu = form.Controls.OfType<MenuStripEx>().FirstOrDefault();
@@ -59,6 +59,11 @@ namespace GitExtensions.BundleBackuper
             }
 
             return null;
+        }
+
+        private FormBrowse FindForm(IGitUICommands commands)
+        {
+            return (FormBrowse)((GitUICommands)commands).BrowseRepo;
         }
 
         private BundleListMenuItem FindMainMenuItem(IGitUICommands commands, MenuStripEx mainMenu = null)
@@ -88,6 +93,7 @@ namespace GitExtensions.BundleBackuper
                     var service = new GitUiCommandsBundleService(this, new DefaultBundleNameProvider(Configuration, this));
                     disposables.Add(new PreferedCommandAfterBundleExecutor(Configuration, this, service));
                     disposables.Add(new CopyPathToClipboardExecutor(Configuration, service));
+                    disposables.Add(new BackupOverrideConfirmation(Configuration, service, FindForm(commands)));
 
                     mainMenu.Items.Add(new BundleListMenuItem(provider, service, service, Configuration));
                 }
