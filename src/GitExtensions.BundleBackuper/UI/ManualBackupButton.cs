@@ -19,7 +19,7 @@ namespace GitExtensions.BundleBackuper.UI
         private readonly IGitBundleFactory bundleFactory;
 
         internal ManualBackupButton(IGitBundleFactory bundleFactory)
-            : base("Backup current branch", Resources.BackupIcon)
+            : base("&Backup current branch", Resources.BackupIcon)
         {
             Ensure.NotNull(bundleFactory, "bundleFactory");
             this.bundleFactory = bundleFactory;

@@ -25,7 +25,7 @@ namespace GitExtensions.BundleBackuper.UI
             this.provider = provider;
             this.mapper = mapper;
 
-            Text = "Bundles";
+            Text = "&Bundles";
             DropDownOpening += OnDropDownOpening;
 
             DropDown.Items.Add(new ManualBackupButton(bundleFactory));

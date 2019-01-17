@@ -18,7 +18,7 @@ namespace GitExtensions.BundleBackuper.UI
         private readonly PluginSettings settings;
 
         internal OpenBackupPathButton(PluginSettings settings)
-            : base("Open backup path", Images.BrowseFileExplorer)
+            : base("&Open backup path", Images.BrowseFileExplorer)
         {
             Ensure.NotNull(settings, "settings");
             this.settings = settings;

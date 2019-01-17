@@ -22,7 +22,7 @@ namespace GitExtensions.BundleBackuper.UI
             this.mapper = mapper;
             this.bundle = bundle;
 
-            Text = bundle.Name;
+            Text = "&" + bundle.Name;
             Checked = mapper.Has(bundle);
             Click += OnClick;
         }
