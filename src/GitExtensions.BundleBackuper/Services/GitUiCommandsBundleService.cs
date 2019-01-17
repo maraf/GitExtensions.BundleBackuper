@@ -17,18 +17,21 @@ namespace GitExtensions.BundleBackuper.Services
     {
         private readonly IFactory<GitUICommands> commandsFactory;
         private readonly IBundleNameProvider nameProvider;
+        private readonly PluginSettings settings;
 
         public event Action<Bundle> Added;
         public event Action<Bundle> Removed;
         public event Action<Bundle, CancelEventArgs> Creating;
         public event Action<Bundle> Created;
 
-        public GitUiCommandsBundleService(IFactory<GitUICommands> commandsFactory, IBundleNameProvider nameProvider)
+        internal GitUiCommandsBundleService(IFactory<GitUICommands> commandsFactory, IBundleNameProvider nameProvider, PluginSettings settings)
         {
             Ensure.NotNull(commandsFactory, "commandsFactory");
             Ensure.NotNull(nameProvider, "nameProvider");
+            Ensure.NotNull(settings, "settings");
             this.commandsFactory = commandsFactory;
             this.nameProvider = nameProvider;
+            this.settings = settings;
         }
 
         public bool Has(Bundle bundle)
@@ -160,7 +163,26 @@ namespace GitExtensions.BundleBackuper.Services
                 return true;
 
             string branches = commands.GitModule.RunGitCmd($"branch -r --contains {commitId}");
-            return !String.IsNullOrWhiteSpace(branches);
+            if (String.IsNullOrWhiteSpace(branches))
+                return false;
+
+            if (settings.RemoteNamesToCheck.Count > 0)
+            {
+                string[] list = branches.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string branch in list)
+                {
+                    string b = branch.Trim();
+                    int indexOfSlash = b.IndexOf('/');
+                    if (indexOfSlash > 0)
+                    {
+                        string remoteName = b.Substring(0, indexOfSlash);
+                        if (settings.RemoteNamesToCheck.Contains(remoteName))
+                            return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private int BinarySearch(int start, int end, Func<int, int> predicate)

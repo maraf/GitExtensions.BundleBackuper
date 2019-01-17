@@ -42,6 +42,11 @@ namespace GitExtensions.BundleBackuper
         /// </summary>
         public static BoolSetting IsBackupOverrideCofirmableProperty { get; } = new BoolSetting("Ask before overriding backup", "Show confirmation message before overriding backup file", false);
 
+        /// <summary>
+        /// Gets a name of the remote check for pushed commits.
+        /// </summary>
+        public static StringSetting RemoteNamesToCheckProperty { get; } = new StringSetting("Remote names to check", "Remote names to check for pushed commits (semicolon separated)", null);
+
         private readonly ISettingsSource source;
 
         /// <summary>
@@ -74,6 +79,27 @@ namespace GitExtensions.BundleBackuper
         /// </summary>
         public bool IsBackupOverrideCofirmable => source.GetValue(IsBackupOverrideCofirmableProperty.Name, IsBackupOverrideCofirmableProperty.DefaultValue, t => Boolean.Parse(t));
 
+        private IReadOnlyCollection<string> remoteNamesToCheck;
+        private string remoteNamesToCheckSource;
+
+        /// <summary>
+        /// Gets current value of <see cref="RemoteNamesToCheckProperty"/>.
+        /// </summary>
+        public IReadOnlyCollection<string> RemoteNamesToCheck
+        {
+            get
+            {
+                string current = source.GetValue(RemoteNamesToCheckProperty.Name, RemoteNamesToCheckProperty.DefaultValue, t => t);
+                if (remoteNamesToCheckSource != current)
+                {
+                    remoteNamesToCheck = (current ?? String.Empty).Split(';');
+                    remoteNamesToCheckSource = current;
+                }
+
+                return remoteNamesToCheck;
+            }
+        }
+
         public PluginSettings(ISettingsSource source)
         {
             Ensure.NotNull(source, "source");
@@ -86,14 +112,15 @@ namespace GitExtensions.BundleBackuper
 
         static PluginSettings()
         {
-            properties = new List<ISetting>(1)
+            properties = new List<ISetting>(7)
             {
                 BackupPathProperty,
                 BackupTemplateProperty,
                 AfterAddRemoteProperty,
                 AfterRemoveRemoteProperty,
                 IsBackupPathCopiedToClipboardProperty,
-                IsBackupOverrideCofirmableProperty
+                IsBackupOverrideCofirmableProperty,
+                RemoteNamesToCheckProperty
             };
         }
 

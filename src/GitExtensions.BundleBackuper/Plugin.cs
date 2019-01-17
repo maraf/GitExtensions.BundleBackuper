@@ -90,7 +90,7 @@ namespace GitExtensions.BundleBackuper
                 if (mainMenu != null && FindMainMenuItem(commands, mainMenu) == null)
                 {
                     var provider = new FileSystemBundleProvider(Configuration);
-                    var service = new GitUiCommandsBundleService(this, new DefaultBundleNameProvider(Configuration, this));
+                    var service = new GitUiCommandsBundleService(this, new DefaultBundleNameProvider(Configuration, this), Configuration);
                     disposables.Add(new PreferedCommandAfterBundleExecutor(Configuration, this, service));
                     disposables.Add(new CopyPathToClipboardExecutor(Configuration, service));
                     disposables.Add(new BackupOverrideConfirmation(Configuration, service, FindForm(commands)));
