@@ -92,6 +92,11 @@ namespace GitExtensions.BundleBackuper.Services
             return null;
         }
 
+        public Task<Bundle> CreateAsync(string commitHash)
+        {
+            throw new NotImplementedException();
+        }
+
         private Task<Tuple<FindCommitResult, string>> FindLastPushedCommitIdAsync(IGitUICommands commands)
         {
             return Task.Factory.StartNew(() =>

@@ -1,4 +1,5 @@
-﻿using GitExtensions.BundleBackuper.Properties;
+﻿using GitCommands;
+using GitExtensions.BundleBackuper.Properties;
 using GitExtensions.BundleBackuper.Services;
 using GitExtensions.BundleBackuper.UI;
 using GitUI;
@@ -87,43 +88,45 @@ namespace GitExtensions.BundleBackuper
 
             if (commands.GitModule.IsValidGitWorkingDir())
             {
+                var service = new Lazy<GitUiCommandsBundleService>(() => new GitUiCommandsBundleService(this, new DefaultBundleNameProvider(Configuration, this), Configuration));
+
                 MenuStripEx mainMenu = FindMainMenu(commands);
                 if (mainMenu != null && FindMainMenuItem(commands, mainMenu) == null)
                 {
                     var provider = new FileSystemBundleProvider(Configuration);
-                    var service = new GitUiCommandsBundleService(this, new DefaultBundleNameProvider(Configuration, this), Configuration);
-                    disposables.Add(new PreferedCommandAfterBundleExecutor(Configuration, this, service));
-                    disposables.Add(new CopyPathToClipboardExecutor(Configuration, service));
-                    disposables.Add(new BackupOverrideConfirmation(Configuration, service, FindForm(commands)));
+                    disposables.Add(new PreferedCommandAfterBundleExecutor(Configuration, this, service.Value));
+                    disposables.Add(new CopyPathToClipboardExecutor(Configuration, service.Value));
+                    disposables.Add(new BackupOverrideConfirmation(Configuration, service.Value, FindForm(commands)));
 
-                    mainMenu.Items.Add(new BundleListMenuItem(provider, service, service, Configuration));
+                    mainMenu.Items.Add(new BundleListMenuItem(provider, service.Value, service.Value, Configuration));
                 }
 
-                ContextMenuStrip contextMenu = FindCommitContextMenu(commands);
-                if (contextMenu != null)
+                if (TryGetCommitContextMenu(commands, out var grid, out var contextMenu))
                 {
                     contextMenu.Items.Add(new ToolStripSeparator());
-                    contextMenu.Items.Add(new ToolStripMenuItem("&Backup commit", null, (sender, e) => MessageBox.Show("K-)")));
+                    contextMenu.Items.Add(new ManualBackupButton(service.Value, grid));
                 }
             }
         }
 
-        private ContextMenuStrip FindCommitContextMenu(IGitUICommands commands)
+        private bool TryGetCommitContextMenu(IGitUICommands commands, out RevisionGridControl revisionGrid, out ContextMenuStrip contextMenu)
         {
             BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
             FieldInfo revisionGridField = typeof(FormBrowse).GetField("RevisionGrid", bindingFlags);
             if (revisionGridField != null)
             {
-                RevisionGridControl revisionGrid = (RevisionGridControl)revisionGridField.GetValue(FindForm(commands));
+                revisionGrid = (RevisionGridControl)revisionGridField.GetValue(FindForm(commands));
                 FieldInfo contextMenuField = typeof(RevisionGridControl).GetField("mainContextMenu", bindingFlags);
                 if (contextMenuField != null)
                 {
-                    ContextMenuStrip contextMenu = (ContextMenuStrip)contextMenuField.GetValue(revisionGrid);
-                    return contextMenu;
+                    contextMenu = (ContextMenuStrip)contextMenuField.GetValue(revisionGrid);
+                    return true;
                 }
             }
 
-            return null;
+            revisionGrid = null;
+            contextMenu = null;
+            return false;
         }
 
         public override void Unregister(IGitUICommands commands)

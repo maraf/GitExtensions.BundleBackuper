@@ -16,6 +16,9 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="GitCommands">
+      <HintPath>..\..\references\GitExtensions\GitCommands.dll</HintPath>
+    </Reference>
     <Reference Include="GitExtUtils">
       <HintPath>..\..\references\GitExtensions\GitExtUtils.dll</HintPath>
     </Reference>

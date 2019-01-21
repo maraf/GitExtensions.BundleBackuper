@@ -1,5 +1,6 @@
 ﻿using GitExtensions.BundleBackuper.Properties;
 using GitExtensions.BundleBackuper.Services;
+using GitUI;
 using Neptuo;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,10 @@ namespace GitExtensions.BundleBackuper.UI
     public class ManualBackupButton : ToolStripMenuItem
     {
         private readonly IGitBundleFactory bundleFactory;
+        private readonly RevisionGridControl revisionGrid;
 
-        internal ManualBackupButton(IGitBundleFactory bundleFactory)
-            : base("&Backup current branch", Resources.BackupIcon)
+        private ManualBackupButton(string text, IGitBundleFactory bundleFactory)
+            : base(text, Resources.BackupIcon)
         {
             Ensure.NotNull(bundleFactory, "bundleFactory");
             this.bundleFactory = bundleFactory;
@@ -27,7 +29,24 @@ namespace GitExtensions.BundleBackuper.UI
             Click += OnClicked;
         }
 
+        internal ManualBackupButton(IGitBundleFactory bundleFactory)
+            : this("&Backup current branch", bundleFactory)
+        {
+        }
+
+        internal ManualBackupButton(IGitBundleFactory bundleFactory, RevisionGridControl revisionGrid)
+            : this("&Backup commit", bundleFactory)
+        {
+            Ensure.NotNull(revisionGrid, "revisionGrid");
+            this.revisionGrid = revisionGrid;
+        }
+
         private async void OnClicked(object sender, EventArgs e)
-            => await bundleFactory.CreateAsync();
+        {
+            if (revisionGrid == null)
+                await bundleFactory.CreateAsync();
+            else
+                await bundleFactory.CreateAsync(revisionGrid.GetCurrentRevision().Guid);
+        }
     }
 }
