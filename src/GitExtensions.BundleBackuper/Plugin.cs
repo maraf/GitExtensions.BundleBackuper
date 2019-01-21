@@ -13,6 +13,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -97,7 +98,32 @@ namespace GitExtensions.BundleBackuper
 
                     mainMenu.Items.Add(new BundleListMenuItem(provider, service, service, Configuration));
                 }
+
+                ContextMenuStrip contextMenu = FindCommitContextMenu(commands);
+                if (contextMenu != null)
+                {
+                    contextMenu.Items.Add(new ToolStripSeparator());
+                    contextMenu.Items.Add(new ToolStripMenuItem("&Backup commit", null, (sender, e) => MessageBox.Show("K-)")));
+                }
             }
+        }
+
+        private ContextMenuStrip FindCommitContextMenu(IGitUICommands commands)
+        {
+            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+            FieldInfo revisionGridField = typeof(FormBrowse).GetField("RevisionGrid", bindingFlags);
+            if (revisionGridField != null)
+            {
+                RevisionGridControl revisionGrid = (RevisionGridControl)revisionGridField.GetValue(FindForm(commands));
+                FieldInfo contextMenuField = typeof(RevisionGridControl).GetField("mainContextMenu", bindingFlags);
+                if (contextMenuField != null)
+                {
+                    ContextMenuStrip contextMenu = (ContextMenuStrip)contextMenuField.GetValue(revisionGrid);
+                    return contextMenu;
+                }
+            }
+
+            return null;
         }
 
         public override void Unregister(IGitUICommands commands)
