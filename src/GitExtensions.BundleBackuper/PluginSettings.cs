@@ -96,6 +96,9 @@ namespace GitExtensions.BundleBackuper
                     remoteNamesToCheckSource = current;
                 }
 
+                if (remoteNamesToCheck == null)
+                    remoteNamesToCheck = Array.Empty<string>();
+
                 return remoteNamesToCheck;
             }
         }
