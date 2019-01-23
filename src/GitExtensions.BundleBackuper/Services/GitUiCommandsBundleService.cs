@@ -1,5 +1,4 @@
-﻿using GitCommands;
-using GitUI;
+﻿using GitUI;
 using GitUI.CommandsDialogs;
 using GitUIPluginInterfaces;
 using Neptuo;
@@ -57,11 +56,14 @@ namespace GitExtensions.BundleBackuper.Services
             }
         }
 
-        public async Task<Bundle> CreateAsync()
+        public Task<Bundle> CreateAsync()
+            => CreateAsync("HEAD");
+
+        public async Task<Bundle> CreateAsync(string commitHash)
         {
             GitUICommands commands = commandsFactory.Create();
 
-            Tuple<FindCommitResult, string> result = await FindLastPushedCommitIdAsync(commands);
+            Tuple<FindCommitResult, string> result = await FindLastPushedCommitIdAsync(commands, commitHash);
             if (result.Item1 != FindCommitResult.NotFound)
             {
                 Bundle bundle = nameProvider.Get();
@@ -92,29 +94,24 @@ namespace GitExtensions.BundleBackuper.Services
             return null;
         }
 
-        public Task<Bundle> CreateAsync(string commitHash)
-        {
-            throw new NotImplementedException();
-        }
-
-        private Task<Tuple<FindCommitResult, string>> FindLastPushedCommitIdAsync(IGitUICommands commands)
+        private Task<Tuple<FindCommitResult, string>> FindLastPushedCommitIdAsync(IGitUICommands commands, string head)
         {
             return Task.Factory.StartNew(() =>
             {
-                string commitId = FindCommitIdIfPushed(commands, 0);
+                string commitId = FindCommitIdIfPushed(commands, head, 0);
                 if (!String.IsNullOrWhiteSpace(commitId))
                     return new Tuple<FindCommitResult, string>(FindCommitResult.NotFound, (string)null);
 
                 int step = 20;
                 for (int i = step; i < 2000; i += step)
                 {
-                    if (IsCommitPushed(commands, i))
+                    if (IsCommitPushed(commands, head, i))
                     {
                         int headOffset = BinarySearch(i - step, i, offset =>
                         {
-                            if (IsCommitPushed(commands, offset))
+                            if (IsCommitPushed(commands, head, offset))
                             {
-                                if (IsCommitPushed(commands, offset - 1))
+                                if (IsCommitPushed(commands, head, offset - 1))
                                     return -1;
                                 else
                                     return 0;
@@ -128,7 +125,7 @@ namespace GitExtensions.BundleBackuper.Services
                         if (headOffset == 0)
                             return new Tuple<FindCommitResult, string>(FindCommitResult.NotFound, null);
 
-                        commitId = FindCommitId(commands, headOffset);
+                        commitId = FindCommitId(commands, head, headOffset);
                         if (commitId == null)
                             return new Tuple<FindCommitResult, string>(FindCommitResult.WithoutBase, null);
 
@@ -140,31 +137,27 @@ namespace GitExtensions.BundleBackuper.Services
             });
         }
 
-        private string FindCommitIdIfPushed(IGitUICommands commands, int headOffset)
+        private string FindCommitIdIfPushed(IGitUICommands commands, string head, int headOffset)
         {
-            if (IsCommitPushed(commands, headOffset))
-            {
-                string commitId = commands.GitModule.RunGitCmd($"rev-parse HEAD~{headOffset}").Trim();
-                if (!String.IsNullOrWhiteSpace(commitId))
-                    return commitId;
-            }
+            if (IsCommitPushed(commands, head, headOffset))
+                return FindCommitId(commands, head, headOffset);
 
             return null;
         }
 
-        private string FindCommitId(IGitUICommands commands, int headOffset)
+        private string FindCommitId(IGitUICommands commands, string head, int headOffset)
         {
-            string commitId = commands.GitModule.RunGitCmd($"rev-parse HEAD~{headOffset}").Trim();
+            string commitId = commands.GitModule.RunGitCmd($"rev-parse {head}~{headOffset}").Trim();
             if (!String.IsNullOrWhiteSpace(commitId) && !commitId.Contains(" "))
                 return commitId;
 
             return null;
         }
 
-        private bool IsCommitPushed(IGitUICommands commands, int headOffset)
+        private bool IsCommitPushed(IGitUICommands commands, string head, int headOffset)
         {
-            string commitId = FindCommitId(commands, headOffset);
-            if (string.IsNullOrEmpty(commitId))
+            string commitId = FindCommitId(commands, head, headOffset);
+            if (String.IsNullOrEmpty(commitId))
                 return true;
 
             string branches = commands.GitModule.RunGitCmd($"branch -r --contains {commitId}");
