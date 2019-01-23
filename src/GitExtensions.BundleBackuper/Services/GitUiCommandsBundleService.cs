@@ -185,9 +185,11 @@ namespace GitExtensions.BundleBackuper.Services
                             return true;
                     }
                 }
+
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         private int BinarySearch(int start, int end, Func<int, int> predicate)
