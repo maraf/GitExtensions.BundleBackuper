@@ -35,7 +35,7 @@ namespace GitExtensions.BundleBackuper.UI
         }
 
         internal ManualBackupButton(IGitBundleFactory bundleFactory, RevisionGridControl revisionGrid)
-            : this("&Backup commit", bundleFactory)
+            : this("&Backup from commit", bundleFactory)
         {
             Ensure.NotNull(revisionGrid, "revisionGrid");
             this.revisionGrid = revisionGrid;
