@@ -10,6 +10,7 @@ using Neptuo.Activators;
 using ResourceManager;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
@@ -101,11 +102,8 @@ namespace GitExtensions.BundleBackuper
                     mainMenu.Items.Add(new BundleListMenuItem(provider, service.Value, service.Value, Configuration));
                 }
 
-                if (TryGetCommitContextMenu(commands, out var grid, out var contextMenu))
-                {
-                    contextMenu.Items.Add(new ToolStripSeparator());
-                    contextMenu.Items.Add(new ManualBackupButton(service.Value, grid));
-                }
+                if (TryGetCommitContextMenu(commands, out var revisionGrid, out var contextMenu))
+                    disposables.Add(new RevisionGridContextMenuBinder(revisionGrid, contextMenu, service.Value));
             }
         }
 

@@ -59,11 +59,12 @@ namespace GitExtensions.BundleBackuper.Services
         public Task<Bundle> CreateAsync()
             => CreateAsync("HEAD");
 
-        public async Task<Bundle> CreateAsync(string commitHash)
+        public async Task<Bundle> CreateAsync(string referenceName)
         {
-            GitUICommands commands = commandsFactory.Create();
+            Ensure.NotNullOrEmpty(referenceName, "referenceName");
 
-            Tuple<FindCommitResult, string> result = await FindLastPushedCommitIdAsync(commands, commitHash);
+            GitUICommands commands = commandsFactory.Create();
+            Tuple<FindCommitResult, string> result = await FindLastPushedCommitIdAsync(commands, referenceName);
             if (result.Item1 != FindCommitResult.NotFound)
             {
                 Bundle bundle = nameProvider.Get();
@@ -77,11 +78,14 @@ namespace GitExtensions.BundleBackuper.Services
                         return null;
                 }
 
+                if (referenceName.Equals("head", StringComparison.InvariantCultureIgnoreCase))
+                    referenceName = commands.GitModule.GetSelectedBranch();
+
                 string arguments = null;
                 if (result.Item1 == FindCommitResult.BaseFound)
-                    arguments = $"bundle create {bundle.FilePath} {result.Item2}..{commands.GitModule.GetSelectedBranch()}";
+                    arguments = $"bundle create {bundle.FilePath} {result.Item2}..{referenceName}";
                 else if (result.Item1 == FindCommitResult.WithoutBase)
-                    arguments = $"bundle create {bundle.FilePath} {commands.GitModule.GetSelectedBranch()}";
+                    arguments = $"bundle create {bundle.FilePath} {referenceName}";
                 else
                     Ensure.Exception.NotSupported(result.Item1);
 
