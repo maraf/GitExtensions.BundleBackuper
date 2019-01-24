@@ -2,6 +2,7 @@
 using GitExtensions.BundleBackuper.Properties;
 using GitExtensions.BundleBackuper.Services;
 using GitUI;
+using GitUIPluginInterfaces;
 using Neptuo;
 using System;
 using System.Collections.Generic;
@@ -35,11 +36,11 @@ namespace GitExtensions.BundleBackuper.UI
         {
         }
 
-        internal ManualBackupButton(IGitBundleFactory bundleFactory, string referenceName)
-            : this("&Backup branch", bundleFactory)
+        internal ManualBackupButton(IGitBundleFactory bundleFactory, IGitRef reference)
+            : this("&Backup " + reference.LocalName, bundleFactory)
         {
-            Ensure.NotNullOrEmpty(referenceName, "referenceName");
-            this.referenceName = referenceName;
+            Ensure.NotNull(reference, "reference");
+            this.referenceName = reference.LocalName;
         }
 
         private async void OnClicked(object sender, EventArgs e)

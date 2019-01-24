@@ -15,7 +15,8 @@ namespace GitExtensions.BundleBackuper.Services
         /// <summary>
         /// Gets a bundle model for current branch.
         /// </summary>
+        /// <param name="referenceName">A name of the referenced object to bundle.</param>
         /// <returns>A bundle model for current branch.</returns>
-        Bundle Get();
+        Bundle Get(string referenceName);
     }
 }

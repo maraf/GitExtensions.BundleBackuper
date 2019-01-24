@@ -18,9 +18,10 @@ namespace GitExtensions.BundleBackuper.Services
         Task<Bundle> CreateAsync();
 
         /// <summary>
-        /// Creates a new backup for commit <paramref name="commitHash"/>.
+        /// Creates a new backup for reference <paramref name="referenceName"/>.
         /// </summary>
+        /// <param name="referenceName">A name of the referenced object.</param>
         /// <returns>Returns continuation task, when resolved contains newly created bundle.</returns>
-        Task<Bundle> CreateAsync(string commitHash);
+        Task<Bundle> CreateAsync(string referenceName);
     }
 }

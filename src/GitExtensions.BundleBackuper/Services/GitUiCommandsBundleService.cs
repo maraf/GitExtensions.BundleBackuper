@@ -67,7 +67,10 @@ namespace GitExtensions.BundleBackuper.Services
             Tuple<FindCommitResult, string> result = await FindLastPushedCommitIdAsync(commands, referenceName);
             if (result.Item1 != FindCommitResult.NotFound)
             {
-                Bundle bundle = nameProvider.Get();
+                if (referenceName.Equals("head", StringComparison.InvariantCultureIgnoreCase))
+                    referenceName = commands.GitModule.GetSelectedBranch();
+
+                Bundle bundle = nameProvider.Get(referenceName);
 
                 if (Creating != null)
                 {
@@ -77,9 +80,6 @@ namespace GitExtensions.BundleBackuper.Services
                     if (args.Cancel)
                         return null;
                 }
-
-                if (referenceName.Equals("head", StringComparison.InvariantCultureIgnoreCase))
-                    referenceName = commands.GitModule.GetSelectedBranch();
 
                 string arguments = null;
                 if (result.Item1 == FindCommitResult.BaseFound)

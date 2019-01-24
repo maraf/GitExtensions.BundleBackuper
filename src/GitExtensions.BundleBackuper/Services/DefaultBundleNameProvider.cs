@@ -38,7 +38,7 @@ namespace GitExtensions.BundleBackuper.Services
             this.commandsFactory = commandsFactory;
         }
 
-        public Bundle Get()
+        public Bundle Get(string referenceName)
         {
             TokenWriter writer = new TokenWriter(settings.BackupTemplate);
 
@@ -49,7 +49,7 @@ namespace GitExtensions.BundleBackuper.Services
                 switch (token)
                 {
                     case Token.Branch.Name:
-                        return commands.GitModule.GetSelectedBranch();
+                        return referenceName;
                     case Token.WorkingDirectory.Path:
                         return commands.GitModule.WorkingDir;
                     case Token.WorkingDirectory.Name:
