@@ -46,7 +46,7 @@ namespace GitExtensions.BundleBackuper.UI
             {
                 foreach (IGitRef reference in revision.Refs)
                 {
-                    if (!reference.IsRemote && !reference.IsStash)
+                    if (!reference.IsRemote && !reference.IsTag && !reference.IsStash)
                     {
                         contextMenu.Items.Add(separator = new ToolStripSeparator());
                         contextMenu.Items.Add(button = new ManualBackupButton(bundleFactory, reference));
