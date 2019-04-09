@@ -56,7 +56,7 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
   </Target>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell.exe ..\..\tools\Download-GitExtensions.ps1" />
+    <Exec Command="powershell.exe -ExecutionPolicy Unrestricted ..\..\tools\Download-GitExtensions.ps1" />
   </Target>
 
   <Target Name="SetPackageProperties" BeforeTargets="GenerateNuspec">
@@ -80,6 +80,6 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
   </Target>
   
   <Target Name="Zip" AfterTargets="Pack">
-    <Exec Command="powershell $(MSBuildProjectDirectory)\..\..\tools\Zip-GitExtensionsPlugin.ps1 -Version $(PackageVersion) -Configuration $(Configuration)" />
+    <Exec Command="powershell -ExecutionPolicy Unrestricted $(MSBuildProjectDirectory)\..\..\tools\Zip-GitExtensionsPlugin.ps1 -Version $(PackageVersion) -Configuration $(Configuration)" />
   </Target>
 </Project>
