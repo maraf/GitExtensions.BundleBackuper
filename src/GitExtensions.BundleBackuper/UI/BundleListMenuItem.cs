@@ -44,14 +44,16 @@ namespace GitExtensions.BundleBackuper.UI
             if (DropDown.Items.Count == 3)
                 DropDown.Items.RemoveAt(2);
 
+            DropDown.Items.Add(new ToolStripSeparator());
+            int loadingIndex = DropDown.Items.Add(new LoadingMenuItem());
+
             if (!await provider.IsAvailableAsync())
             {
+                DropDown.Items.RemoveAt(2);
+                DropDown.Items.RemoveAt(2);
                 SetItemsEnabled(false);
                 return;
             }
-
-            DropDown.Items.Add(new ToolStripSeparator());
-            int loadingIndex = DropDown.Items.Add(new LoadingMenuItem());
 
             SetItemsEnabled(true);
             DropDown.Items.AddRange(await CreateBundleItemsAsync());
