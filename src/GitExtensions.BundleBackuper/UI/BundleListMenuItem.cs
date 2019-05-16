@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -17,6 +18,7 @@ namespace GitExtensions.BundleBackuper.UI
     {
         private readonly IBundleProvider provider;
         private readonly IGitBundleMapper mapper;
+        private bool isLoading;
 
         internal BundleListMenuItem(IBundleProvider provider, IGitBundleMapper mapper, IGitBundleFactory bundleFactory, PluginSettings settings)
         {
@@ -34,31 +36,43 @@ namespace GitExtensions.BundleBackuper.UI
 
         private async void OnDropDownOpening(object sender, EventArgs e)
         {
-            foreach (var item in DropDown.Items.OfType<BundleMapMenuItem>().ToList())
-                DropDown.Items.Remove(item);
-
-            NoDataMenuItem noData = DropDown.Items.OfType<NoDataMenuItem>().FirstOrDefault();
-            if (noData != null)
-                DropDown.Items.Remove(noData);
-
-            if (DropDown.Items.Count == 3)
-                DropDown.Items.RemoveAt(2);
-
-            DropDown.Items.Add(new ToolStripSeparator());
-            int loadingIndex = DropDown.Items.Add(new LoadingMenuItem());
-
-            if (!await provider.IsAvailableAsync())
-            {
-                DropDown.Items.RemoveAt(2);
-                DropDown.Items.RemoveAt(2);
-                SetItemsEnabled(false);
+            if (isLoading)
                 return;
+
+            try
+            {
+                isLoading = true;
+
+                foreach (var item in DropDown.Items.OfType<BundleMapMenuItem>().ToList())
+                    DropDown.Items.Remove(item);
+
+                NoDataMenuItem noData = DropDown.Items.OfType<NoDataMenuItem>().FirstOrDefault();
+                if (noData != null)
+                    DropDown.Items.Remove(noData);
+
+                if (DropDown.Items.Count == 3)
+                    DropDown.Items.RemoveAt(2);
+
+                DropDown.Items.Add(new ToolStripSeparator());
+                int loadingIndex = DropDown.Items.Add(new LoadingMenuItem());
+
+                if (!await provider.IsAvailableAsync())
+                {
+                    DropDown.Items.RemoveAt(2);
+                    DropDown.Items.RemoveAt(2);
+                    SetItemsEnabled(false);
+                    return;
+                }
+
+                SetItemsEnabled(true);
+                DropDown.Items.AddRange(await CreateBundleItemsAsync());
+
+                DropDown.Items.RemoveAt(loadingIndex);
             }
-
-            SetItemsEnabled(true);
-            DropDown.Items.AddRange(await CreateBundleItemsAsync());
-
-            DropDown.Items.RemoveAt(loadingIndex);
+            finally
+            {
+                isLoading = false;
+            }
         }
 
         private async Task<ToolStripItem[]> CreateBundleItemsAsync()
