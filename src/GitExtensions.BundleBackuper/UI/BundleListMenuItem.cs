@@ -44,7 +44,7 @@ namespace GitExtensions.BundleBackuper.UI
             if (DropDown.Items.Count == 3)
                 DropDown.Items.RemoveAt(2);
 
-            if (!provider.IsAvailable())
+            if (!await provider.IsAvailableAsync())
             {
                 SetItemsEnabled(false);
                 return;

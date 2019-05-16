@@ -15,7 +15,7 @@ namespace GitExtensions.BundleBackuper.Services
         /// Returns <c>true</c> if storage is available for reading.
         /// </summary>
         /// <returns><c>true</c> if storage is available for reading.</returns>
-        bool IsAvailable();
+        Task<bool> IsAvailableAsync();
 
         /// <summary>
         /// Enumerates all currently available backup bundles.

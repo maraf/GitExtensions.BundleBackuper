@@ -18,8 +18,8 @@ namespace GitExtensions.BundleBackuper.Services
             this.settings = settings;
         }
 
-        public bool IsAvailable()
-            => Directory.Exists(settings.BackupPath);
+        public Task<bool> IsAvailableAsync()
+            => Task.Run(() => Directory.Exists(settings.BackupPath));
 
         public Task<IReadOnlyCollection<Bundle>> EnumerateAsync()
         {
