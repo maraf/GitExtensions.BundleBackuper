@@ -151,9 +151,12 @@ namespace GitExtensions.BundleBackuper.Services
 
         private string FindCommitId(IGitUICommands commands, string head, int headOffset)
         {
-            string commitId = RunGitCommand(commands, $"rev-parse {head}~{headOffset}").Trim();
-            if (!String.IsNullOrWhiteSpace(commitId) && !commitId.Contains(" "))
-                return commitId;
+            if (TryRunGitCommand(commands, $"rev-parse {head}~{headOffset}", out string commitId))
+            {
+                commitId = commitId.Trim();
+                if (!String.IsNullOrWhiteSpace(commitId) && !commitId.Contains(" "))
+                    return commitId;
+            }
 
             return null;
         }
@@ -164,10 +167,7 @@ namespace GitExtensions.BundleBackuper.Services
             if (String.IsNullOrEmpty(commitId))
                 return true;
 
-            
-
-            string branches = RunGitCommand(commands, $"branch -r --contains {commitId}");
-            if (String.IsNullOrWhiteSpace(branches))
+            if (!TryRunGitCommand(commands, $"branch -r --contains {commitId}", out string branches) || String.IsNullOrWhiteSpace(branches))
                 return false;
 
             if (settings.RemoteNamesToCheck.Count > 0)
@@ -214,7 +214,7 @@ namespace GitExtensions.BundleBackuper.Services
             }
         }
 
-        private string RunGitCommand(IGitUICommands commands, string arguments)
+        private bool TryRunGitCommand(IGitUICommands commands, string arguments, out string output)
         {
             using (IProcess process = commands.GitModule.GitCommandRunner.RunDetached(arguments, redirectOutput: true))
             {
@@ -222,9 +222,13 @@ namespace GitExtensions.BundleBackuper.Services
 
                 string error = process.StandardError.ReadToEnd();
                 if (!String.IsNullOrEmpty(error))
-                    return error;
+                {
+                    output = error;
+                    return false;
+                }
 
-                return process.StandardOutput.ReadToEnd();
+                output = process.StandardOutput.ReadToEnd();
+                return false;
             }
         }
     }
