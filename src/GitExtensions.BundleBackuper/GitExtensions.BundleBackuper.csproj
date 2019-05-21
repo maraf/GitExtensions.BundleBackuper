@@ -13,6 +13,7 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
 
   <PropertyGroup>
     <GitExtensionsDebugPluginsPath>..\..\references\GitExtensions\Plugins\</GitExtensionsDebugPluginsPath>
+    <GitExtensionsReferenceVersion>v3.1</GitExtensionsReferenceVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -56,7 +57,7 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
   </Target>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell.exe -ExecutionPolicy Unrestricted ..\..\tools\Download-GitExtensions.ps1" />
+    <Exec Command="powershell.exe -ExecutionPolicy Unrestricted ..\..\tools\Download-GitExtensions.ps1 -Version $(GitExtensionsReferenceVersion)" />
   </Target>
 
   <Target Name="SetPackageProperties" BeforeTargets="GenerateNuspec">
