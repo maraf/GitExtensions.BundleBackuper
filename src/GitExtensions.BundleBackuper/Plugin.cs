@@ -109,16 +109,20 @@ namespace GitExtensions.BundleBackuper
 
         private bool TryGetCommitContextMenu(IGitUICommands commands, out RevisionGridControl revisionGrid, out ContextMenuStrip contextMenu)
         {
-            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
-            FieldInfo revisionGridField = typeof(FormBrowse).GetField("RevisionGrid", bindingFlags);
-            if (revisionGridField != null)
+            FormBrowse form = FindForm(commands);
+            if (form != null)
             {
-                revisionGrid = (RevisionGridControl)revisionGridField.GetValue(FindForm(commands));
-                FieldInfo contextMenuField = typeof(RevisionGridControl).GetField("mainContextMenu", bindingFlags);
-                if (contextMenuField != null)
+                BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+                FieldInfo revisionGridField = typeof(FormBrowse).GetField("RevisionGrid", bindingFlags);
+                if (revisionGridField != null)
                 {
-                    contextMenu = (ContextMenuStrip)contextMenuField.GetValue(revisionGrid);
-                    return true;
+                    revisionGrid = (RevisionGridControl)revisionGridField.GetValue(form);
+                    FieldInfo contextMenuField = typeof(RevisionGridControl).GetField("mainContextMenu", bindingFlags);
+                    if (contextMenuField != null)
+                    {
+                        contextMenu = (ContextMenuStrip)contextMenuField.GetValue(revisionGrid);
+                        return true;
+                    }
                 }
             }
 
