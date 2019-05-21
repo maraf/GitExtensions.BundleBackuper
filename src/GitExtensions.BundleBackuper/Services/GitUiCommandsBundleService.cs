@@ -151,7 +151,7 @@ namespace GitExtensions.BundleBackuper.Services
 
         private string FindCommitId(IGitUICommands commands, string head, int headOffset)
         {
-            string commitId = commands.GitModule.RunGitCmd($"rev-parse {head}~{headOffset}").Trim();
+            string commitId = RunGitCommand(commands, $"rev-parse {head}~{headOffset}").Trim();
             if (!String.IsNullOrWhiteSpace(commitId) && !commitId.Contains(" "))
                 return commitId;
 
@@ -164,7 +164,9 @@ namespace GitExtensions.BundleBackuper.Services
             if (String.IsNullOrEmpty(commitId))
                 return true;
 
-            string branches = commands.GitModule.RunGitCmd($"branch -r --contains {commitId}");
+            
+
+            string branches = RunGitCommand(commands, $"branch -r --contains {commitId}");
             if (String.IsNullOrWhiteSpace(branches))
                 return false;
 
@@ -209,6 +211,20 @@ namespace GitExtensions.BundleBackuper.Services
                     return median;
                 default:
                     throw Ensure.Exception.NotSupported("BinarySearch predicate must return -1, 0 or 1.");
+            }
+        }
+
+        private string RunGitCommand(IGitUICommands commands, string arguments)
+        {
+            using (IProcess process = commands.GitModule.GitCommandRunner.RunDetached(arguments, redirectOutput: true))
+            {
+                process.WaitForExit();
+
+                string error = process.StandardError.ReadToEnd();
+                if (!String.IsNullOrEmpty(error))
+                    return error;
+
+                return process.StandardOutput.ReadToEnd();
             }
         }
     }
