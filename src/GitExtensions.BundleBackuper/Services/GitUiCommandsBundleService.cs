@@ -228,7 +228,7 @@ namespace GitExtensions.BundleBackuper.Services
                 }
 
                 output = process.StandardOutput.ReadToEnd();
-                return false;
+                return true;
             }
         }
     }
