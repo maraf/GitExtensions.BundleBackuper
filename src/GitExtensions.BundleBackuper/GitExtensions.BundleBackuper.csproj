@@ -13,6 +13,7 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
 
   <PropertyGroup>
     <GitExtensionsDebugPluginsPath>..\..\references\GitExtensions\Plugins\</GitExtensionsDebugPluginsPath>
+    <GitExtensionsReferenceSource>github</GitExtensionsReferenceSource>
     <GitExtensionsReferenceVersion>v3.1</GitExtensionsReferenceVersion>
   </PropertyGroup>
 
