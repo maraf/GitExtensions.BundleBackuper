@@ -1,4 +1,9 @@
-param([string] $Version, [string] $Source = "github")
+param([string] $ExtractRootPath, [string] $Version, [string] $Source = "github")
+
+if (-not($ExtractRootPath)) 
+{ 
+    Throw "Parameter -ExtractRootPath is required";
+}
 
 if (-not($Version)) 
 { 
@@ -12,8 +17,10 @@ if (-not($Source -eq "github") -and -not($Source -eq "appveyor"))
 
 Set-Location $PSScriptRoot
 
+$ExtractRootPath = Resolve-Path $ExtractRootPath;
+Write-Host "Extraction root path is '$ExtractRootPath'.";
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$ExtractRootPath = '../references'
 $AssetToDownloadName = 'GitExtensions-' + $Version + '.zip';
 $AssetToDownloadUrl = $null;
 

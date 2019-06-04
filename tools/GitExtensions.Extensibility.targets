@@ -1,0 +1,21 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="GitExtensions.Extensibility.props" />
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <MakeDir Directories="$(GitExtensionsPluginsPath)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GitExtensionsPluginsPath)" />
+  </Target>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <PropertyGroup>
+      <!-- It's required to pass absolute paths to the PS1 script, otherwise it's based wrong. -->
+      <_GitExtensionsExtractPath>$([System.IO.Path]::Combine('$(ProjectDir)', '$(GitExtensionsExtractPath)'))</_GitExtensionsExtractPath>
+      <_GitExtensionsDownloadScriptPath>$([System.IO.Path]::Combine('$(ProjectDir)', '$(GitExtensionsDownloadScriptPath)'))</_GitExtensionsDownloadScriptPath>
+      <_GitExtensionsExecutablePath>$([System.IO.Path]::Combine('$(GitExtensionsPath)', 'GitExtensions.exe'))</_GitExtensionsExecutablePath>
+    </PropertyGroup>
+    <MakeDir Directories="$(_GitExtensionsExtractPath)" />
+    <Error Condition="!Exists($(_GitExtensionsExecutablePath)) and !Exists($(_GitExtensionsDownloadScriptPath))" Text="Path to GitExtensions portable download script is wrong. Current value '$(_GitExtensionsDownloadScriptPath)'." />
+    <Exec Condition="!Exists($(_GitExtensionsExecutablePath))" Command="powershell.exe -ExecutionPolicy Unrestricted $(_GitExtensionsDownloadScriptPath) -ExtractRootPath $(_GitExtensionsExtractPath) -Version $(GitExtensionsReferenceVersion) -Source $(GitExtensionsReferenceSource)" />
+  </Target>
+
+</Project>
