@@ -77,8 +77,4 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
     </PropertyGroup>
   </Target>
   
-  <Target Name="Zip" AfterTargets="Pack">
-    <Exec Command="powershell -ExecutionPolicy Unrestricted $(MSBuildProjectDirectory)\..\..\tools\Zip-GitExtensionsPlugin.ps1 -Version $(PackageVersion) -Configuration $(Configuration)" />
-  </Target>
-  
 </Project>
