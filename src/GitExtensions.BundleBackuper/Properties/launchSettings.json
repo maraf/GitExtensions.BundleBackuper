@@ -2,7 +2,7 @@
   "profiles": {
     "GitExtensions.BundleBackuper": {
       "commandName": "Executable",
-      "executablePath": "$(GitExtensionsPath)\\GitExtensions.exe"
+      "executablePath": "$(GitExtensionsExecutablePath)"
     }
   }
 }

@@ -12,14 +12,16 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
   </PropertyGroup>
 
   <PropertyGroup>
-    <!--     
+    <GitExtensionsReferenceVersion>v3.2.1</GitExtensionsReferenceVersion>
+    <!--
     <GitExtensionsExtractPath>C:\Temp\GitExtensionsDebug</GitExtensionsExtractPath>
-    <GitExtensionsReferenceVersion>v3.2.0.6060</GitExtensionsReferenceVersion>
     <GitExtensionsReferenceSource>appveyor</GitExtensionsReferenceSource>
      -->
   </PropertyGroup>
 
-  <Import Project="..\..\tools\GitExtensions.Extensibility.targets" />
+  <ItemGroup>
+    <PackageReference Include="GitExtensions.Extensibility" Version="0.1.*" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="GitCommands">
@@ -48,9 +50,6 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
