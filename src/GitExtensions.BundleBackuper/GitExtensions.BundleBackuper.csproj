@@ -12,7 +12,8 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
   </PropertyGroup>
 
   <PropertyGroup>
-    <GitExtensionsReferenceVersion>v3.2.1</GitExtensionsReferenceVersion>
+    <GitExtensionsReferenceVersion>v3.4.2</GitExtensionsReferenceVersion>
+    <GitExtensionsDownloadPath>..\..\references</GitExtensionsDownloadPath>
     <!--
     <GitExtensionsExtractPath>C:\Temp\GitExtensionsDebug</GitExtensionsExtractPath>
     <GitExtensionsReferenceSource>appveyor</GitExtensionsReferenceSource>
