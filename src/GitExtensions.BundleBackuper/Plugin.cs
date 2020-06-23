@@ -34,6 +34,7 @@ namespace GitExtensions.BundleBackuper
         internal PluginSettings Configuration { get; private set; }
 
         public Plugin()
+            : base(true)
         {
             Name = "Bundle Backuper";
             Description = "Branch Bundle Backuping";
