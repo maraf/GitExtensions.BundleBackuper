@@ -5,7 +5,7 @@
     <Description>Branch backuping plugin for GitExtensions.
 This plugin lets you create a .bundle containing all unpublished commits.</Description>
     <PackageTags>Neptuo GitExtensions</PackageTags>
-    <PackageProjectUrl>https://www.neptuo.com/project/dev/gitextensions.bundlebackuper</PackageProjectUrl>
+    <PackageProjectUrl>https://www.neptuo.com/project/desktop/gitextensions.bundlebackuper</PackageProjectUrl>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <NuspecFile>$(MSBuildThisFileDirectory)$(MSBuildProjectName).nuspec</NuspecFile>
     <NoWarn>1701;1702;NU5100</NoWarn>
