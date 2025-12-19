@@ -1,11 +1,8 @@
-﻿using GitUIPluginInterfaces;
+﻿using GitExtensions.Extensibility.Settings;
 using Neptuo;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GitExtensions.BundleBackuper
 {
@@ -47,37 +44,37 @@ namespace GitExtensions.BundleBackuper
         /// </summary>
         public static StringSetting RemoteNamesToCheckProperty { get; } = new StringSetting("Remote names to check", "Remote names to check for pushed commits (semicolon separated)", null);
 
-        private readonly ISettingsSource source;
+        private readonly SettingsSource source;
 
         /// <summary>
         /// Gets current value of <see cref="BackupPathProperty"/>.
         /// </summary>
-        public string BackupPath => source.GetValue(BackupPathProperty.Name, BackupPathProperty.DefaultValue, t => t);
+        public string BackupPath => source.GetString(BackupPathProperty.Name, BackupPathProperty.DefaultValue);
 
         /// <summary>
         /// Gets current value of <see cref="BackupTemplateProperty"/>.
         /// </summary>
-        public string BackupTemplate => source.GetValue(BackupTemplateProperty.Name, BackupTemplateProperty.DefaultValue, t => t);
+        public string BackupTemplate => source.GetString(BackupTemplateProperty.Name, BackupTemplateProperty.DefaultValue);
 
         /// <summary>
         /// Gets current value of <see cref="AfterAddRemoteProperty"/>.
         /// </summary>
-        public string AfterAddRemote => source.GetValue(AfterAddRemoteProperty.Name, AfterAddRemoteProperty.DefaultValue, t => t);
+        public string AfterAddRemote => source.GetString(AfterAddRemoteProperty.Name, AfterAddRemoteProperty.DefaultValue);
 
         /// <summary>
         /// Gets current value of <see cref="AfterRemoveRemoteProperty"/>.
         /// </summary>
-        public string AfterRemoveRemote => source.GetValue(AfterRemoveRemoteProperty.Name, AfterRemoveRemoteProperty.DefaultValue, t => t);
+        public string AfterRemoveRemote => source.GetString(AfterRemoveRemoteProperty.Name, AfterRemoveRemoteProperty.DefaultValue);
 
         /// <summary>
         /// Gets current value of <see cref="IsBackupPathCopiedToClipboardProperty"/>.
         /// </summary>
-        public bool IsBackupPathCopiedToClipboard => source.GetValue(IsBackupPathCopiedToClipboardProperty.Name, IsBackupPathCopiedToClipboardProperty.DefaultValue, t => Boolean.Parse(t));
+        public bool IsBackupPathCopiedToClipboard => source.GetBool(IsBackupPathCopiedToClipboardProperty.Name, IsBackupPathCopiedToClipboardProperty.DefaultValue);
 
         /// <summary>
         /// Gets current value of <see cref="IsBackupOverrideCofirmableProperty"/>.
         /// </summary>
-        public bool IsBackupOverrideCofirmable => source.GetValue(IsBackupOverrideCofirmableProperty.Name, IsBackupOverrideCofirmableProperty.DefaultValue, t => Boolean.Parse(t));
+        public bool IsBackupOverrideCofirmable => source.GetBool(IsBackupOverrideCofirmableProperty.Name, IsBackupOverrideCofirmableProperty.DefaultValue);
 
         private IReadOnlyCollection<string> remoteNamesToCheck;
         private string remoteNamesToCheckSource;
@@ -89,7 +86,7 @@ namespace GitExtensions.BundleBackuper
         {
             get
             {
-                string current = source.GetValue(RemoteNamesToCheckProperty.Name, RemoteNamesToCheckProperty.DefaultValue, t => t);
+                string current = source.GetString(RemoteNamesToCheckProperty.Name, RemoteNamesToCheckProperty.DefaultValue);
                 if (remoteNamesToCheckSource != current)
                 {
                     remoteNamesToCheck = (current ?? String.Empty).Split(';');
@@ -103,7 +100,7 @@ namespace GitExtensions.BundleBackuper
             }
         }
 
-        public PluginSettings(ISettingsSource source)
+        public PluginSettings(SettingsSource source)
         {
             Ensure.NotNull(source, "source");
             this.source = source;

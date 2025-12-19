@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neptuo.Text.Positions
+﻿namespace Neptuo.Text.Positions
 {
     /// <summary>
     /// Describes position/offset in source global source content.

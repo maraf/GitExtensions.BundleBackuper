@@ -1,24 +1,20 @@
-﻿using GitCommands;
+﻿using GitExtensions.Extensibility.Git;
 using GitExtensions.BundleBackuper.Properties;
 using GitExtensions.BundleBackuper.Services;
 using GitExtensions.BundleBackuper.UI;
 using GitUI;
 using GitUI.CommandsDialogs;
-using GitUIPluginInterfaces;
 using Neptuo;
 using Neptuo.Activators;
-using ResourceManager;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using GitExtensions.Extensibility.Plugins;
+using GitExtensions.Extensibility.Settings;
 
 namespace GitExtensions.BundleBackuper
 {
@@ -88,7 +84,7 @@ namespace GitExtensions.BundleBackuper
             this.commands = (GitUICommands)commands;
             Configuration = new PluginSettings(Settings);
 
-            if (commands.GitModule.IsValidGitWorkingDir())
+            if (commands.Module.IsValidGitWorkingDir())
             {
                 var service = new Lazy<GitUiCommandsBundleService>(() => new GitUiCommandsBundleService(this, new DefaultBundleNameProvider(Configuration, this), Configuration));
 

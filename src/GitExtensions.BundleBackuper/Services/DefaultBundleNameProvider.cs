@@ -1,13 +1,9 @@
-﻿using GitUIPluginInterfaces;
+﻿using GitExtensions.Extensibility.Git;
 using Neptuo;
 using Neptuo.Activators;
 using Neptuo.Text.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GitExtensions.BundleBackuper.Services
 {
@@ -51,9 +47,9 @@ namespace GitExtensions.BundleBackuper.Services
                     case Token.Branch.Name:
                         return referenceName;
                     case Token.WorkingDirectory.Path:
-                        return commands.GitModule.WorkingDir;
+                        return commands.Module.WorkingDir;
                     case Token.WorkingDirectory.Name:
-                        string directoryName = commands.GitModule.WorkingDir;
+                        string directoryName = commands.Module.WorkingDir;
 
                         if (directoryName.Last() == Path.DirectorySeparatorChar || directoryName.Last() == Path.AltDirectorySeparatorChar)
                             directoryName = Path.GetDirectoryName(directoryName);

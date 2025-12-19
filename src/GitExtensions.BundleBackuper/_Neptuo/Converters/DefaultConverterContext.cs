@@ -1,11 +1,4 @@
-﻿using Neptuo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neptuo.Converters
+﻿namespace Neptuo.Converters
 {
     /// <summary>
     /// A default implementation of <see cref="IConverterContext{TSource}"/>.
