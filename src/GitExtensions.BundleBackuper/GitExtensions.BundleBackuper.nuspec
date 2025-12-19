@@ -8,10 +8,10 @@
     <projectUrl>$projectUrl$</projectUrl>
     <tags>$tags$</tags>
     <dependencies>
-      <dependency id="GitExtensions.Extensibility" version="[0.1.0, 0.2.0)" />
+      <dependency id="GitExtensions.Extensibility" version="[0.4.0, 0.5.0)" />
     </dependencies>
   </metadata>
   <files>
-    <file src="bin/$configuration$/net461/GitExtensions.BundleBackuper.dll" target="/lib" />
+    <file src="bin/$configuration$/net9.0-windows/GitExtensions.BundleBackuper.dll" target="/lib" />
   </files>
 </package>

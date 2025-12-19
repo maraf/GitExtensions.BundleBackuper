@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <Description>Branch backuping plugin for GitExtensions.
 This plugin lets you create a .bundle containing all unpublished commits.</Description>
     <PackageTags>Neptuo GitExtensions</PackageTags>
@@ -9,10 +9,11 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <NuspecFile>$(MSBuildThisFileDirectory)$(MSBuildProjectName).nuspec</NuspecFile>
     <NoWarn>1701;1702;NU5100</NoWarn>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <PropertyGroup>
-    <GitExtensionsReferenceVersion>v3.4.2</GitExtensionsReferenceVersion>
+    <GitExtensionsReferenceVersion>v6.0</GitExtensionsReferenceVersion>
     <GitExtensionsDownloadPath>..\..\references</GitExtensionsDownloadPath>
     <!--
     <GitExtensionsExtractPath>C:\Temp\GitExtensionsDebug</GitExtensionsExtractPath>
@@ -21,7 +22,7 @@ This plugin lets you create a .bundle containing all unpublished commits.</Descr
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitExtensions.Extensibility" Version="0.1.*" />
+    <PackageReference Include="GitExtensions.Extensibility" Version="0.4.*" />
   </ItemGroup>
 
   <ItemGroup>
