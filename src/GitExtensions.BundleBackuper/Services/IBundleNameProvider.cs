@@ -1,11 +1,4 @@
-﻿using Neptuo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GitExtensions.BundleBackuper.Services
+﻿namespace GitExtensions.BundleBackuper.Services
 {
     /// <summary>
     /// Bundle name provider.

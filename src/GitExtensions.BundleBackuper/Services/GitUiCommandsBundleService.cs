@@ -1,13 +1,13 @@
-﻿using GitUI;
+﻿using GitExtensions.Extensibility;
+using GitExtensions.Extensibility.Git;
+using GitUI;
 using GitUI.CommandsDialogs;
-using GitUIPluginInterfaces;
 using Neptuo;
 using Neptuo.Activators;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GitExtensions.BundleBackuper.Services
@@ -34,14 +34,14 @@ namespace GitExtensions.BundleBackuper.Services
         }
 
         public bool Has(Bundle bundle)
-            => commandsFactory.Create().GitModule.GetRemoteNames().Contains(bundle.Name);
+            => commandsFactory.Create().Module.GetRemoteNames().Contains(bundle.Name);
 
         public void Add(Bundle bundle)
         {
             if (!Has(bundle))
             {
                 IGitUICommands commands = commandsFactory.Create();
-                commands.GitModule.AddRemote(bundle.Name, bundle.FilePath);
+                commands.Module.AddRemote(bundle.Name, bundle.FilePath);
                 Added?.Invoke(bundle);
             }
         }
@@ -51,7 +51,7 @@ namespace GitExtensions.BundleBackuper.Services
             if (Has(bundle))
             {
                 IGitUICommands commands = commandsFactory.Create();
-                commands.GitModule.RemoveRemote(bundle.Name);
+                commands.Module.RemoveRemote(bundle.Name);
                 Removed?.Invoke(bundle);
             }
         }
@@ -68,7 +68,7 @@ namespace GitExtensions.BundleBackuper.Services
             if (result.Item1 != FindCommitResult.NotFound)
             {
                 if (referenceName.Equals("head", StringComparison.InvariantCultureIgnoreCase))
-                    referenceName = commands.GitModule.GetSelectedBranch();
+                    referenceName = commands.Module.GetSelectedBranch();
 
                 Bundle bundle = nameProvider.Get(referenceName);
 
@@ -216,11 +216,11 @@ namespace GitExtensions.BundleBackuper.Services
 
         private bool TryRunGitCommand(IGitUICommands commands, string arguments, out string output)
         {
-            using (IProcess process = commands.GitModule.GitCommandRunner.RunDetached(arguments, redirectOutput: true))
+            using (IProcess process = commands.Module.GitCommandRunner.RunDetached(CancellationToken.None, arguments, redirectOutput: true))
             {
                 process.WaitForExit();
 
-                string error = process.StandardError.ReadToEnd();
+                string error = process.StandardError;
                 if (!String.IsNullOrEmpty(error))
                 {
                     output = error;

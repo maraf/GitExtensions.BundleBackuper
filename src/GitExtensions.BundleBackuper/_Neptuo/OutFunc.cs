@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Neptuo
+﻿namespace Neptuo
 { 
     /// <summary>
     /// Function with one input parameter, one output parameter and result value.

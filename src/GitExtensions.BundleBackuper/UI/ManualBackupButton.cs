@@ -1,15 +1,8 @@
-﻿using GitCommands;
-using GitExtensions.BundleBackuper.Properties;
+﻿using GitExtensions.BundleBackuper.Properties;
 using GitExtensions.BundleBackuper.Services;
-using GitUI;
-using GitUIPluginInterfaces;
+using GitExtensions.Extensibility.Git;
 using Neptuo;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GitExtensions.BundleBackuper.UI

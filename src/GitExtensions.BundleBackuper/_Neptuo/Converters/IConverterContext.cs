@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neptuo.Converters
+﻿namespace Neptuo.Converters
 {
     /// <summary>
     /// The contract for replacement of source value in the generic <see cref="IConverter{TSource, TTarget}"/>.

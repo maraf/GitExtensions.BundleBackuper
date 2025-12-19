@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neptuo.Activators
+﻿namespace Neptuo.Activators
 {
     /// <summary>
     /// An activator for <typeparamref name="T"/>

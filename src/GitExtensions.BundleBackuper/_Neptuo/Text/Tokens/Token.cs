@@ -1,7 +1,6 @@
 ﻿using Neptuo.Text.Positions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Neptuo.Text.Tokens

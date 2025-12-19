@@ -1,13 +1,8 @@
 ﻿using GitUI;
 using GitUI.CommandsDialogs;
-using GitUIPluginInterfaces;
 using Neptuo;
 using Neptuo.Activators;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GitExtensions.BundleBackuper.Services
 {

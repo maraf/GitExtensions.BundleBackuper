@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Neptuo.Text.Tokens
+﻿namespace Neptuo.Text.Tokens
 {
     /// <summary>
     /// Describes named token attribute.
